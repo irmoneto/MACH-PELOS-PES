@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- NOVO: Meta Tag de Verificação do Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-2957847231347233">
+  
+  <!-- INÍCIO: INTEGRAÇÃO GOOGLE ADSENSE (CÓDIGO DE AUTO ADS INSERIDO) -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2957847231347233" crossorigin="anonymous"></script>
+  <!-- FIM: INTEGRAÇÃO GOOGLE ADSENSE -->
+  
+  <!-- Content Security Policy: Garantindo que todos os recursos externos (CDNs e AdSense) sejam carregados via HTTPS -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://pagead2.googlesyndication.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://raw.githubusercontent.com https://github.com https://placehold.co; media-src 'self' blob:;">
+  <title>Analisador de Compatibilidade pelos Pés - By Irmo Zuccato Neto</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    /* Esconde todos os containers por padrão */
+    #app-header-container, .result-container, .step-container { 
+        display: none;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        position: absolute;
+        width: 100%;
+    }
+    .active-block { 
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+        position: relative;
+    }
+    .step-container.hiding {
+        opacity: 0;
+        transform: translateY(-20px);
+        pointer-events: none;
+    }
+    .custom-cursor { cursor: crosshair; }
+    .bg-animation {
+      background-color: #f0f9ff;
+      background-image: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+    }
+    .result-perfect { color: #10b981; } /* Green */
+    .result-very-close { color: #f59e0b; } /* Amber */
+    .result-close { color: #fb7185; } /* Pink */
+    .result-far { color: #ef4444; } /* Red */
+
+    /* Estilo para a notificação de cópia */
+    #copy-notification {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #2f3640;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        pointer-events: none;
+        transform: translate(-50%, 20px);
+    }
+    #copy-notification.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    
+    /* Estilo para Impressão e PDF */
+    @media print {
+        body, html {
+            background-color: white;
+        }
+        body * {
+            visibility: hidden;
+        }
+        #comparison-report-block, #comparison-report-block * {
+            visibility: visible;
+        }
+        #comparison-report-block {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            border: none;
+            box-shadow: none;
+            margin: 0;
+            padding: 0;
+        }
+        .action-buttons, .ads-container {
+            display: none;
+        }
+        .pdf-page-break-after {
+            page-break-after: always;
+        }
+    }
+    
+    /* Estilo para o Loading Spinner (adicionado) */
+    .loading-spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid #fff;
+        width: 1.5rem;
+        height: 1.5rem;
+        animation: spin 1s linear infinite;
+        margin-left: 0.5rem;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* NOVO: Estilo para a barra de navegação inferior (Mobile) */
+    #app-navigation-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #ffffff;
+        border-top: 1px solid #e5e7eb;
+        box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        padding: 1rem;
+        transform: translateY(100%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    #app-navigation-bar.show {
+        transform: translateY(0);
+    }
+    
+    /* Para os botões Voltar/Avançar inline, garantindo que não quebrem o layout */
+    .navigation-container {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    /* Estilo padronizado e maior para os botões de navegação */
+    .navigation-container .action-button {
+        flex: 1 1 45%; /* Permite que os botões cresçam até 45% e fiquem lado a lado */
+        max-width: 250px; /* Aumentei o max-width para dar mais destaque */
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        font-size: 1.125rem; /* text-lg */
+        font-weight: 700; /* font-bold */
+        border-radius: 0.75rem; /* rounded-xl */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* shadow-lg */
+        transition: all 0.2s;
+    }
+    .navigation-container .action-button:hover {
+        transform: scale(1.02);
+    }
+    
+    /* Estilos para ocultar o botão de voltar inline quando a barra de navegação móvel está ativa */
+    @media (max-width: 640px) {
+        .navigation-container {
+            /* No mobile, usamos a barra de navegação inferior, escondemos o container inline */
+            display: none;
+        }
+        /* Os botões de voltar no topo do bloco são para tablets/desktop */
+        [id^="back-"] {
+            display: none !important;
+        }
+    }
+  </style>
+</head>
+<body class="bg-animation min-h-screen p-4 sm:p-8 text-gray-800 flex items-center justify-center">
+
+  <div id="app-main-content" class="max-w-4xl w-full mx-auto block-transition mb-20 sm:mb-0"> <!-- Aumentado margin bottom para nav bar em mobile -->
+    <!-- Título/Header -->
+    <div id="app-header-container">
+        <header class="text-center mb-6 sm:mb-10">
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-2">ANÁLISE DE "MATCH" PELOS PÉS</h1>
+          <p class="text-base sm:text-xl text-gray-600">By IRMO ZUCCATO NETO</p>
+        </header>
+    </div>
+
+    <!-- Tela Inicial -->
+    <div id="splash-screen" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-dashed border-blue-300 text-center transition-all duration-300 active-block">
+      
+      <img src="https://raw.githubusercontent.com/irmoneto/Analisador-Personalidade-Pelos-P-s/main/IMAGENS%20APP/LOGO.jpg" alt="Logo do Irmo Zuccato Neto" class="mx-auto mb-6 rounded-full shadow-lg" style="max-width: 150px; height: auto;">
+      
+      <h2 class="text-xl sm:text-2xl font-bold mb-4">ANÁLISE DE "MATCH" PELOS PÉS</h2>
+      <p class="text-lg sm:text-xl text-gray-700 mb-8">Descubra os pontos fortes e desafios na relação entre duas pessoas a partir dos seus pés.</p>
+      <button id="start-button" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:from-blue-600 hover:to-blue-700 cursor-pointer transition-transform duration-200 transform hover:scale-105">
+        Começar Análise Dupla
+      </button>
+      <p class="text-xs text-gray-500 mt-4">
+        Ao continuar, você concorda com os <a href="#" id="open-terms-splash" class="text-blue-600 hover:text-blue-800 underline font-medium">Termos de Uso</a>.
+      </p>
+    </div>
+
+    <!-- Bloco de Personalização (Coleta dos 2 Nomes) -->
+    <div id="personalization-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-dashed border-gray-300 text-center transition-all duration-300 step-container">
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center sm:mb-6 mb-4">
+            <img src="https://raw.githubusercontent.com/irmoneto/Analisador-Personalidade-Pes/main/IMAGENS%20APP/LOGO%20OLA.png" 
+                 alt="Logo de Boas-Vindas" 
+                 class="shadow-md sm:mr-4 mx-auto mb-4 sm:mb-0" 
+                 style="width: 150px; height: 100px; max-width: 150px; border-radius: 10px;">
+            
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">QUEM ESTÁ NESSA RELAÇÃO?</h2>
+        </div>
+        
+        <div class="mb-6 text-left">
+            <label for="name-p1-input" class="block text-gray-700 font-semibold mb-2">Nome da Pessoa 1:</label>
+            <input type="text" id="name-p1-input" placeholder="Ex: João" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div class="mb-6 text-left">
+            <label for="name-p2-input" class="block text-gray-700 font-semibold mb-2">Nome da Pessoa 2:</label>
+            <input type="text" id="name-p2-input" placeholder="Ex: Maria" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <button id="continue-to-upload" class="bg-teal-500 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-teal-600 cursor-pointer transition-transform duration-200 transform hover:scale-105">
+          Prosseguir para Análise do Pé 1
+        </button>
+        <p id="personalization-error" class="text-red-500 text-sm mt-4 hidden">Por favor, preencha os nomes de Pessoa 1 e Pessoa 2.</p>
+        <p class="text-xs text-gray-500 mt-6">
+            Leia os <a href="#" id="open-terms-personalization" class="text-blue-600 hover:text-blue-800 underline font-medium">Termos Legais</a> completos antes de continuar.
+        </p>
+    </div>
+    
+    <!-- Bloco de Upload (Adaptação para Pessoa 1 ou 2) -->
+    <div id="upload-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-dashed border-gray-300 text-center transition-all duration-300 step-container">
+        <h2 class="text-xl sm:text-2xl font-semibold mb-4">Adicione uma foto do pé de <span id="target-name-display" class="text-blue-600"></span></h2>
+        <p class="text-gray-500 mb-6">A foto deve ser clara, de boa qualidade, tirada de cima e de frente.</p>
+        <img src="https://raw.githubusercontent.com/irmoneto/Analisador-Personalidade-Pelos-P-s/main/IMAGENS%20APP/EXEMPLO%2002.PNG" alt="Exemplo de foto para upload" class="mx-auto rounded-lg shadow-md mb-6 w-full max-w-sm h-auto">
+        
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <!-- Câmera Nativa (Mobile) -->
+            <label for="native-camera-input" id="open-camera-button-label" class="bg-blue-500 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-blue-600 transition-colors cursor-pointer inline-flex items-center justify-center mobile-only">
+                📸 Tirar Foto (Câmera Nativa)
+                <input type="file" id="native-camera-input" accept="image/*" class="hidden" capture="environment">
+            </label>
+            
+            <label for="image-upload" class="bg-teal-500 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-teal-600 cursor-pointer transition-colors inline-flex items-center justify-center">
+                📁 Fazer Upload
+                <input type="file" id="image-upload" accept="image/*" class="hidden">
+            </label>
+        </div>
+        <p id="camera-error" class="text-red-500 text-sm mt-4 hidden"></p>
+    </div>
+
+    <!-- Bloco de Confirmação da Foto Capturada -->
+    <div id="preview-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg text-center transition-all duration-300 step-container">
+        <h2 class="text-xl sm:text-2xl font-semibold mb-4">Confirme a Foto para <span id="preview-target-name" class="text-blue-600"></span></h2>
+        <img id="photo-preview" src="" alt="Foto capturada" class="mx-auto rounded-lg shadow-md mb-6 w-full max-w-md h-auto" style="transition: transform 0.3s ease;">
+        <div class="flex flex-col gap-4">
+            <div class="flex justify-center gap-4">
+                <button id="rotate-left-button" class="bg-blue-500 text-white py-3 px-6 rounded-full font-bold shadow-lg hover:bg-blue-600 transition-colors">🔄 Girar para a Esquerda</button>
+                <button id="rotate-right-button" class="bg-blue-500 text-white py-3 px-6 rounded-full font-bold shadow-lg hover:bg-blue-600 transition-colors">🔄 Girar para a Direita</button>
+            </div>
+            <div class="flex justify-center gap-4">
+                <!-- Botão Tirar Outra / Mudar Foto -->
+                <button id="retake-photo-button" class="bg-gray-500 text-white py-3 px-6 rounded-full font-bold shadow-lg hover:bg-gray-600 transition-colors" onclick="showBlock(uploadBlock)">Tirar Outra / Mudar Foto</button>
+                <button id="use-photo-button" class="bg-teal-500 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-teal-600 transition-colors">Usar Foto</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Instruções (Formato e Tamanho) -->
+    <div id="shape-instruction-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-dashed border-blue-300 text-center transition-all duration-300 step-container">
+        <!-- Removido botão back inline no topo -->
+        <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-800">Análise do Formato do Pé de <span id="shape-target-name" class="text-blue-600"></span></h2>
+        <p class="text-gray-600 mb-6">Observe a imagem abaixo para entender onde as marcações das pontas dos dedos devem ser feitas.</p>
+        <img src="https://raw.githubusercontent.com/irmoneto/Analisador-Personalidade-Pelos-P-s/main/IMAGENS%20APP/EXEMPLO%20F%20P%C3%89S.PNG" alt="Exemplo de marcação para formato do pé" class="mx-auto rounded-lg shadow-md mb-8 w-full max-w-md h-auto border-2 border-gray-200">
+        
+        <!-- NOVO: Container de botões Voltar/Continuar -->
+        <div class="navigation-container">
+            <!-- Botão Voltar CENTRALIZADO -->
+            <button id="back-shape-instruction" class="action-button bg-gray-500 text-white hover:bg-gray-600 cursor-pointer transition-transform duration-200 transform flex items-center justify-center">
+                Voltar
+            </button>
+            <button id="continue-to-shape-measurement" class="action-button bg-blue-600 text-white hover:bg-blue-700 cursor-pointer transition-transform duration-200 transform">
+                Continuar
+            </button>
+        </div>
+    </div>
+    
+    <div id="ratio-instruction-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-dashed border-yellow-300 text-center transition-all duration-300 step-container">
+        <!-- Removido botão back inline no topo -->
+        <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-800">Análise do Tamanho dos Dedos de <span id="ratio-target-name" class="text-blue-600"></span></h2>
+        <p class="text-gray-600 mb-4">Você precisará fazer TRÊS marcações na imagem do pé:</p>
+        <div class="text-left bg-yellow-50 p-4 rounded-lg mb-6 border-l-4 border-yellow-400">
+          <ol class="list-decimal pl-5 space-y-3">
+            <li><strong>Ponta do 2º dedo</strong></li>
+            <li><strong>Base do 2º dedo</strong></li>
+            <li><strong>Final do peito do pé</strong></li>
+          </ol>
+        </div>
+        <img src="https://raw.githubusercontent.com/irmoneto/Analisador-Personalidade-Pelos-P-s/main/IMAGENS%20APP/EXEMPLO%20T%20DEDOS.jpeg" alt="Exemplo de marcação para tamanho dos dedos" class="mx-auto rounded-lg shadow-md mb-8 w-full max-w-md h-auto border-2 border-gray-200">
+        
+        <!-- NOVO: Container de botões Voltar/Continuar -->
+        <div class="navigation-container">
+            <!-- Botão Voltar CENTRALIZADO -->
+            <button id="back-ratio-instruction" class="action-button bg-gray-500 text-white hover:bg-gray-600 cursor-pointer transition-transform duration-200 transform flex items-center justify-center">
+                Voltar
+            </button>
+            <button id="continue-to-ratio-measurement" class="action-button bg-red-700 text-white hover:bg-red-800 transition-transform duration-200 transform">
+                Entendi, Continuar
+            </button>
+        </div>
+    </div>
+
+    <!-- Medição (Comum para ambas as fases) -->
+    <div id="measurement-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg transition-all duration-300 step-container">
+      
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-800 mb-2 sm:mb-0">Marque os Pontos para <span id="measurement-target-name" class="text-blue-600"></span></h2>
+        <button id="redo-button" class="flex items-center gap-2 bg-gray-200 text-gray-700 py-2 px-4 rounded-full font-medium hover:bg-gray-300 transition-colors text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M4 20h5v-5M20 4h-5v5"/></svg>
+            Refazer Marcações
+        </button>
+      </div>
+      <p id="instruction" class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 mb-4 rounded-md font-medium"></p>
+      <div class="relative bg-gray-50 rounded-lg overflow-hidden border-2 border-gray-300">
+        <canvas id="imageCanvas" class="w-full h-auto custom-cursor"></canvas>
+      </div>
+      <div id="progress-container" class="mt-4 grid grid-cols-4 gap-2"></div>
+      
+      <!-- NOVO: Container de botões Voltar/Calcular -->
+      <div class="navigation-container">
+          <!-- Botão Voltar CENTRALIZADO -->
+          <button id="back-measurement" class="action-button bg-gray-500 text-white hover:bg-gray-600 transition-colors flex items-center justify-center">
+              Voltar
+          </button>
+          <button id="calculate-button" class="action-button bg-blue-500 text-white hover:bg-blue-600 transition-colors hidden">
+              Calcular
+          </button>
+      </div>
+    </div>
+    
+    <!-- Resultado Formato -->
+    <div id="shape-result-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-blue-300 transition-all duration-300 result-container">
+        
+        <h2 class="text-xl sm:text-2xl font-bold mb-4 text-center">Resultado do Formato do Pé de <span id="shape-result-target-name" class="text-blue-600"></span></h2>
+      <div class="flex flex-col sm:flex-row gap-8">
+          <!-- Conteúdo do resultado de formato -->
+        <div class="flex-1">
+            <img id="shape-result-image" src="" alt="Foto do Pé" class="rounded-lg shadow-md mb-4 w-full h-auto">
+        </div>
+        <div class="flex-1 text-center">
+            <div class="text-5xl font-extrabold mb-4" id="shape-emoji"></div>
+            <div class="text-xl font-semibold mb-6" id="shape-text"></div>
+            <p id="classification-reasoning" class="text-sm text-gray-600 mt-2"></p>
+            
+            <!-- Botão de ação (analisar razão) agora em container de navegação -->
+            <div class="navigation-container mt-8">
+                <!-- Botão Voltar CENTRALIZADO -->
+                <button id="back-shape-result" class="action-button bg-gray-500 text-white hover:bg-gray-600 transition-colors flex items-center justify-center">
+                    Voltar
+                </button>
+                <button id="analyze-ratio-button" class="action-button bg-red-700 text-white hover:bg-red-800 transition-colors">
+                    Analisar Tamanho dos Dedos
+                </button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bloco de Resultado da Análise do Tamanho dos Dedos -->
+    <div id="ratio-result-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-yellow-300 transition-all duration-300 result-container">
+        
+        <h2 class="text-xl sm:text-2xl font-bold mb-4 text-center">Resultado da Análise do Tamanho dos Dedos de <span id="ratio-result-target-name" class="text-blue-600"></span></h2>
+      <div class="flex flex-col sm:flex-row gap-8">
+        <div class="flex-1">
+          <img id="ratio-result-image" src="" alt="Foto do Pé com medições da Análise do Tamanho dos Dedos" class="rounded-lg shadow-md mb-4 w-full h-auto">
+        </div>
+        <div class="flex-1">
+          <div class="text-center">
+            <div id="ratio-result-ratio" class="text-5xl font-extrabold result-perfect mb-4"></div>
+            <div id="ratio-result-text" class="text-xl font-semibold mb-6"></div>
+          </div>
+          <!-- Detalhes da razão -->
+          <div class="mt-8">
+            <p class="text-center text-sm text-gray-500 mb-2">Proximidade com a Razão Ideal</p>
+            <div class="relative w-full max-w-sm mx-auto h-3 bg-gray-200 rounded-full">
+                <div id="ratio-progress-bar" class="absolute h-3 rounded-full transition-all duration-500"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- NOVO: Container de botões Voltar/Continuar -->
+      <div class="navigation-container mt-4">
+        <!-- Botão Voltar CENTRALIZADO -->
+        <button id="back-ratio-result" class="action-button bg-gray-500 text-white hover:bg-gray-600 transition-colors flex items-center justify-center">
+            Voltar
+        </button>
+        <button id="new-ratio-analysis-button" class="action-button bg-red-600 text-white hover:bg-red-700 transition-colors">
+            Análise das Unhas
+        </button>
+      </div>
+    </div>
+    
+    <!-- Pergunta sobre Unhas (Adaptação para Pessoa 1 ou 2) -->
+    <div id="nails-question-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-orange-300 transition-all duration-300 step-container">
+        
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-6 text-center">Análise das Unhas dos Pés de <span id="nails-target-name" class="text-blue-600"></span></h2>
+        
+        <div class="flex flex-col sm:flex-row gap-8 items-center mb-8">
+            <div class="flex-1">
+                <img id="nails-result-image" src="" alt="Foto do Pé para análise de unhas" class="rounded-lg shadow-xl w-full h-auto border-4 border-gray-200">
+            </div>
+            <div class="flex-1">
+                <img src="https://raw.githubusercontent.com/irmoneto/Analisador-Personalidade-Pelos-P-s/main/IMAGENS%20APP/TAMANHO%20UNHAS.png" alt="Exemplo de tamanho de unhas" class="rounded-lg shadow-xl w-full h-auto border-4 border-gray-200">
+            </div>
+        </div>
+
+        <div class="text-center">
+            <p class="text-xl font-semibold mb-4">A maioria das suas unhas dos pés são:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <label class="flex flex-col items-center p-4 rounded-lg bg-gray-50 border border-gray-200 cursor-pointer hover:bg-gray-100">
+                    <input type="radio" name="nails-visibility" value="Pouco Visíveis" class="mb-2">
+                    <span class="font-medium">POUCO VISÍVEIS</span>
+                </label>
+                <label class="flex flex-col items-center p-4 rounded-lg bg-gray-50 border border-gray-200 cursor-pointer hover:bg-gray-100">
+                    <input type="radio" name="nails-visibility" value="Normais" class="mb-2">
+                    <span class="font-medium">VISÍVEIS (NORMAIS)</span>
+                </label>
+                <label class="flex flex-col items-center p-4 rounded-lg bg-gray-50 border border-gray-200 cursor-pointer hover:bg-gray-100">
+                    <input type="radio" name="nails-visibility" value="Bem Visíveis" class="mb-2">
+                    <span class="font-medium">BEM VISÍVEIS</span>
+                </label>
+            </div>
+            
+            <p id="nails-error" class="text-red-500 text-sm mt-4 hidden">Por favor, selecione uma opção para prosseguir.</p>
+            
+            <!-- NOVO: Container de botões Voltar/Continuar -->
+            <div class="navigation-container">
+                <!-- Botão Voltar CENTRALIZADO -->
+                <button id="back-nails-question" class="action-button bg-gray-500 text-white hover:bg-gray-600 transition-colors flex items-center justify-center">
+                    Voltar
+                </button>
+                <button id="continue-to-next-step" class="action-button bg-purple-600 text-white hover:bg-purple-700 transition-colors inline-flex items-center justify-center">
+                    <span id="button-text-next">
+                        Prosseguir para a Análise da Pessoa 2
+                    </span>
+                    <span id="button-text-generate" class="hidden">
+                        Gerar Relatório de Compatibilidade
+                    </span>
+                    <span id="loading-spinner" class="hidden loading-spinner ml-2"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- REMOVIDO: Questionário Pessoal Otimizado (Perguntas Complementares) -->
+    
+    <!-- Relatório Completo de Análise (AGORA RELATÓRIO DE COMPATIBILIDADE) -->
+    <div id="comparison-report-block" class="bg-white p-8 sm:p-12 rounded-xl shadow-lg border-2 border-green-300 transition-all duration-300 step-container">
+        
+        <!-- Título -->
+        <div class="text-center mb-10 pb-6 border-b border-gray-200 pdf-page-break-after">
+            <!-- NOVO TÍTULO EM DUAS LINHAS -->
+            <h2 class="text-2xl sm:text-3xl font-bold text-teal-700 mb-1">RELATÓRIO DE ANÁLISE DE "MATCH"</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold text-teal-700 mb-3">PELOS PÉS - By @IrmoNeto</h2>
+            
+            <!-- CORRIGIDO: Distribuição do nome em duas linhas -->
+            <p class="text-xl text-gray-700">Compatibilidade dos Pés de</p>
+            <p class="text-2xl font-bold text-teal-600 mt-1">
+                <span id="report-target-name-p1" class="font-bold"></span> & <span id="report-target-name-p2" class="font-bold"></span>
+            </p>
+        </div>
+
+        <!-- Análises Individuais (Resumo) -->
+        <div class="flex flex-col space-y-8">
+            <h3 class="text-2xl font-extrabold text-gray-800 text-center">ANÁLISE INDIVIDUAL SIMPLIFICADA</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Resumo Pessoa 1 (CORRIGIDO: Cores para verde) -->
+                <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                    <!-- Título alterado para verde escuro (text-green-800) -->
+                    <h4 class="text-xl font-bold text-green-800 mb-4 border-b pb-2" id="report-p1-title"></h4>
+                    <ul class="space-y-3 text-gray-700 mt-4 text-sm">
+                        <li class="flex justify-between"><strong>Formato:</strong> <span id="summary-p1-shape" class="font-semibold text-right"></span></li>
+                        <li class="flex justify-between"><strong>Tamanho Dedos:</strong> <span id="summary-p1-ratio" class="font-semibold text-right"></span></li>
+                        <li class="flex justify-between"><strong>Tamanho Unhas:</strong> <span id="summary-p1-nails" class="font-semibold text-right"></span></li> 
+                    </ul>
+                    <!-- CORRIGIDO: Imagem injetada via JS, fallback removido -->
+                    <img id="final-report-image-p1" src="" alt="Foto do Pé 1" class="mx-auto rounded-lg shadow-md mt-4 border border-gray-300" style="max-width: 150px;">
+                </div>
+                <!-- Resumo Pessoa 2 (CORRIGIDO: Cores para verde) -->
+                <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                    <!-- Título alterado para verde escuro (text-green-800) -->
+                    <h4 class="text-xl font-bold text-green-800 mb-4 border-b pb-2" id="report-p2-title"></h4>
+                    <ul class="space-y-3 text-gray-700 mt-4 text-sm">
+                        <li class="flex justify-between"><strong>Formato:</strong> <span id="summary-p2-shape" class="font-semibold text-right"></span></li>
+                        <li class="flex justify-between"><strong>Tamanho Dedos:</strong> <span id="summary-p2-ratio" class="font-semibold text-right"></span></li>
+                        <li class="flex justify-between"><strong>Tamanho Unhas:</strong> <span id="summary-p2-nails" class="font-semibold text-right"></span></li> 
+                    </ul>
+                    <!-- CORRIGIDO: Imagem injetada via JS, fallback removido -->
+                    <img id="final-report-image-p2" src="" alt="Foto do Pé 2" class="mx-auto rounded-lg shadow-md mt-4 border border-gray-300" style="max-width: 150px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-10 pt-4 border-t border-gray-200 pdf-page-break-after">
+            <h3 class="text-2xl font-extrabold text-green-700 mb-6 text-center">ANÁLISE DE COMPATIBILIDADE INTERPESSOAL</h3>
+            
+            <div id="comparison-analysis-result" class="prose max-w-none text-gray-800 leading-relaxed bg-gray-50 p-6 sm:p-8 rounded-lg border-l-4 border-green-400">
+                Aguardando dados para gerar o relatório comparativo...
+            </div>
+        </div>
+        
+        <!-- CTA para Página de Vendas -->
+        <div class="mt-8 mb-4 text-center">
+            <h4 class="text-xl font-bold text-gray-800 mb-4">Quer saber mais sobre o seu pé e como ele revela sua personalidade?</h4>
+            <a href="https://irmoneto.github.io/INFOPRODUTOS-BY-IRMONETO/" target="_blank" class="inline-flex items-center justify-center bg-yellow-500 text-white py-3 px-8 rounded-full font-bold shadow-xl hover:bg-yellow-600 transition-colors transform hover:scale-[1.03] text-lg w-full sm:w-auto">
+                CLIQUE AQUI E ACESSE MAIS CONTEÚDOS SOBRE O TEMA
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+            </a>
+        </div>
+    
+        <!-- Botões de Ação Final (Com botão Compartilhar Adicionado) -->
+        <div class="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4 action-buttons">
+            <button id="save-analysis-button" class="bg-green-600 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-green-700 transition-colors w-full sm:w-auto">
+                Salvar Relatório em PDF
+            </button>
+             <!-- NOVO: Botão Compartilhar Resultado -->
+            <button id="share-analysis-button" class="bg-teal-600 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-teal-700 transition-colors w-full sm:w-auto">
+                Compartilhar Resultado
+            </button>
+            <!-- NOVO: Botão de voltar para a última etapa -->
+            <button id="back-from-report-button" class="bg-gray-500 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-gray-600 transition-colors w-full sm:w-auto">
+                Voltar à Análise da Pessoa 2
+            </button>
+            <button id="start-new-full-analysis-button" class="bg-blue-600 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-blue-700 transition-colors w-full sm:w-auto">
+                Realizar Nova Análise
+            </button>
+        </div>
+    </div>
+
+    <!-- Bloco para Documentos Legais (mantido) -->
+    <div id="legal-documents-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-red-300 transition-all duration-300 step-container max-w-3xl mx-auto">
+        <!-- Conteúdo legal... (omitido para brevidade, mas o JS o manterá) -->
+        <div class="text-center mb-6">
+            <h2 class="text-2xl sm:text-3xl font-bold text-red-700 mb-2">Termos Legais do Aplicativo</h2>
+            <p class="text-gray-600">Última atualização: Outubro de 2025</p>
+        </div>
+
+        <div class="space-y-8 text-gray-700 text-sm">
+            <!-- TERMOS DE USO -->
+            <div id="terms-of-use" class="border-b pb-4">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">1. TERMOS DE USO</h3>
+                <p class="font-semibold mb-2">1.1. Direitos Autorais e Propriedade Intelectual</p>
+                <p class="ml-4 mb-2">Todo o código, design, metodologia de análise e conteúdo textual (incluindo o Relatório Final) são de propriedade exclusiva do desenvolvedor, **Irmo Zuccato Neto**. A propriedade intelectual é protegida por leis de direitos autorais.</p>
+                
+                <p class="font-semibold mb-2">1.2. Limitações de Uso e Proibições</p>
+                <ul class="list-disc list-inside ml-4 space-y-1">
+                    <li>O uso do aplicativo destina-se exclusivamente à análise pessoal ou de cliente, conforme as funcionalidades oferecidas.</li>
+                    <li>É estritamente **proibida** a reprodução, cópia, modificação, engenharia reversa, distribuição ou revenda do código ou da metodologia subjacente.</li>
+                    <li>A reprodução total ou parcial do Relatório Final para fins comerciais (venda, publicação em massa) sem autorização expressa do desenvolvedor é proibida.</li>
+                </ul>
+            </div>
+            
+            <!-- POLÍTICA DE PRIVACIDADE -->
+            <div id="privacy-policy" class="border-b pb-4">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">2. POLÍTICA DE PRIVACIDADE</h3>
+                <p class="font-semibold mb-2">2.1. Coleta e Uso de Dados</p>
+                <p class="ml-4 mb-2">Coletamos apenas o **nome** do usuário e/ou cliente para fins de personalização do relatório. Estes nomes são exibidos no Relatório Final gerado, mas não são armazenados em um banco de dados persistente neste momento.</p>
+                
+                <p class="font-semibold mb-2">2.2. Armazenamento e Uso de Imagens</p>
+                <p class="ml-4 mb-2">A **imagem do pé** é usada unicamente para a realização das medições visuais no dispositivo do usuário (navegador) e para inclusão no Relatório Final (PDF/Visualização). A imagem **não é enviada, armazenada ou compartilhada** com o desenvolvedor ou terceiros, sendo descartada após o encerramento da sessão ou início de nova análise.</p>
+                
+                <p class="font-semibold mb-2">2.3. Cookies e Rastreamento (Tracking)</p>
+                <p class="ml-4">O aplicativo **não utiliza cookies** de rastreamento de terceiros (tracking) ou ferramentas de analytics que coletam dados pessoais. O uso do Tailwind CSS e HTML2PDF é baseado em CDNs de terceiros, mas sem coleta de dados específica do usuário por este aplicativo.</p>
+            </div>
+
+            <!-- LICENÇA DE SOFTWARE -->
+            <div id="software-license" class="border-b pb-4">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">3. LICENÇA DE USO (USUÁRIO FINAL)</h3>
+                <p class="font-semibold mb-2">3.1. Permissões Concedidas</p>
+                <p class="ml-4 mb-2">É concedida ao usuário uma licença limitada, não exclusiva e intransferível para usar este software para fins pessoais ou profissionais de análise (clientes), conforme a proposta original.</p>
+                
+                <p class="font-semibold mb-2">3.2. Restrições e Penalidades</p>
+                <p class="ml-4">A violação das limitações de uso e das proibições de reprodução (item 1) pode resultar em penalidades legais, incluindo, mas não se limitando a, ações por violação de direitos autorais e danos morais, conforme a legislação brasileira e internacional aplicável.</p>
+            </div>
+
+            <!-- AVISOS LEGAIS -->
+            <div id="legal-disclaimers">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">4. AVISOS LEGAIS E LIMITAÇÃO DE RESPONSABILIDADE</h3>
+                <p class="font-semibold mb-2">4.1. Disclaimer Médico</p>
+                <p class="ml-4 mb-2 bg-yellow-100 p-2 rounded">**O Aplicativo não oferece diagnóstico médico, psicológico, quiroprático ou podológico.** A análise é baseada em estudos de leitura de pés com finalidade de autoconhecimento e desenvolvimento personal. Use o Relatório Final apenas como uma ferramenta complementar e não substitua a avaliação de um profissional de saúde qualificado.</p>
+                
+                <p class="font-semibold mb-2">4.2. Limitação de Responsabilidade</p>
+                <p class="ml-4 mb-2">O desenvolvedor não se responsabiliza por quaisquer danos diretos ou indiretos decorrentes do uso (ou mau uso) da análise e das informações geradas por este aplicativo.</p>
+                
+                <p class="font-semibold mb-2">4.3. Jurisdição Aplicável</p>
+                <p class="ml-4">Estes Termos e o uso do aplicativo são regidos pelas leis da República Federativa do Brasil.</p>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <button id="back-from-legal-button" class="bg-red-500 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-red-600 transition-colors">
+                Voltar ao Aplicativo
+            </button>
+        </div>
+    </div>
+  </div>
+
+  <div id="copy-notification">Relatório copiado para a área de transferência!</div>
+    
+  <!-- NOVO: Barra de Navegação Flutuante para Mobile (Visível apenas em telas pequenas) -->
+  <div id="app-navigation-bar" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-xl p-4 transition-transform duration-300 transform translate-y-full flex justify-between items-center z-50 sm:hidden">
+    <button id="nav-back-button" class="flex items-center text-gray-600 font-semibold py-2 px-4 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full mr-2">
+      <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Voltar
+    </button>
+    <!-- Botão de avançar oculto, pois o fluxo principal exige o clique nos botões de conteúdo -->
+    <button id="nav-next-button" class="flex items-center justify-center text-blue-600 font-semibold py-2 px-4 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full ml-2 hidden">
+      Avançar
+      <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+    </button>
+  </div>
+
+
+  <script>
+    
+    // --- DADOS RELACIONAIS EMBUTIDOS (Extraídos do relacionamentos_interpessoais.sql) ---
+    // Estrutura: [Tipo] -> [Combinação P1 X P2] -> { fortes: '...', fracos: '...', analise_curta: '...' }
+    const RELATIONAL_DATA = {
+        "Formato": {
+            "Egípcio X Egípcio": { fortes: 'Duas mentes lineares se unem, criando uma parceria extremamente focada, prática e eficiente. Há clareza mútua de objetivos e alta capacidade de execução. A previsibilidade gera segurança e baixa ambiguidade.', fracos: 'A rigidez pode ser dupla, levando a conflitos de controle e dificuldade em ceder. Falta de abertura para o improviso ou a intuição. Tendência a ignorar nuances emocionais em favor da tarefa.', analise_curta: 'Aqui temos um encontro de mentes estratégicas. Ambos gostam de planejar, entender e analisar tudo antes de agir, por isso é mais fácil o papo fluir, as ideias se encaixam... mas quanto a agir, isso é diferente. Match mental forte, mas cuidado com o excesso de “vamos pensar sobre isso”.' },
+            "Egípcio X Grego/Romano": { fortes: 'O linear (Egípcio) complementa o sistêmico (Grego/Romano). O Egípcio traz o foco na execução e o G/R a visão estratégica e de longo prazo. Excelente para projetos, combinando planejamento detalhado com ação objetiva.', fracos: 'O Egípcio pode ver o G/R como excessivamente teórico ou lento. O G/R pode ver o Egípcio como apressado e simplista, ignorando a complexidade. Conflito entre a necessidade de agir logo e a necessidade de analisar tudo.', analise_curta: 'O Egípcio traz o foco na execução e o Grego/Romano a visão de longo prazo. Match prático e estratégico, onde um ensina o outro a aterrar sonhos e a sonhar com mais profundidade. Cuidado com o atrito entre a pressa e a análise excessiva.' },
+            "Egípcio X Quadrado": { fortes: 'O Quadrado traz a visão utópica e integradora, e o Egípcio traz a praticidade e o passo a passo (o "como"). O Egípcio ajuda a concretizar o ideal do Quadrado, focando a energia dispersa.', fracos: 'O Egípcio se frustra com a dispersão e o idealismo do Quadrado. O Quadrado se sente limitado ou podado pela rigidez e objetividade excessiva do Egípcio. Comunicação pode falhar entre o "sonho" e a "realidade".', analise_curta: 'Aqui a visão utópica (Quadrado) encontra a execução objetiva (Egípcio). O Egípcio dá estrutura ao idealismo do Quadrado, mas precisa ter paciência com a dispersão. Match com potencial de concretização de grandes ideias, se houver tolerância à diferença de ritmo mental.' },
+            "Grego/Romano X Grego/Romano": { fortes: 'Parceria baseada na visão de mundo e na estratégia. Entendimento mútuo da necessidade de análise, detalhismo e planejamento. Criam sistemas complexos e bem estruturados juntos.', fracos: 'Risco de paralisia por análise. Demoram muito para iniciar a ação. Podem se perder em detalhes e teorias, dificultando a simplicidade e a execução prática.', analise_curta: 'Aqui temos um encontro de mentes estratégicas. Ambos gostam de planejar, entender e analisar tudo antes de agir, por isso é mais fácil o papo fluir, as ideias se encaixam... mas quanto a agir, isso é diferente. Match mental forte, mas cuidado com o excesso de “vamos pensar sobre isso”.' },
+            "Grego/Romano X Quadrado": { fortes: 'Compartilham a visão ampla e a aversão à simplicidade. O G/R estrutura a utopia do Quadrado em esquemas e planos viáveis. Grande potencial para inovação e soluções holísticas.', fracos: 'Ambos podem ser abstratos demais, com pouca conexão com a terra e a prática. O G/R pode tentar enquadrar o idealismo do Quadrado, gerando atrito. Risco de dispersão intelectual.', analise_curta: 'Ambos valorizam a visão ampla e a complexidade, criando um ambiente de alta inovação e estratégia. O desafio é sair do campo das ideias: o Grego/Romano deve liderar o planejamento para transformar a utopia do Quadrado em algo executável. Risco de viverem "na lua".' },
+            "Quadrado X Quadrado": { fortes: 'Relação de grande liberdade mental, aceitação de complexidade e forte idealismo. Apoio mútuo na busca por soluções integrais e éticas. Criam um ambiente de não julgamento e vasta abertura de ideias.', fracos: 'Extrema dispersão, falta de foco e objetividade. O idealismo pode levar à frustração com o mundo real. Dificuldade em tomar decisões práticas e concluir projetos.', analise_curta: 'Dupla de mentes libres e integradoras. Excelente para debater grandes conceitos e ideais, mas péssima para decisões do dia a dia. É um match de "mentes brilhantes" que precisam de alguém de fora para fazer a lista do supermercado. O desafio é aterrar as ideias utópicas.' }
+        },
+        "Tamanho Dedos": {
+            "Curtos X Curtos": { fortes: 'Dupla prática, objetiva e voltada à ação. Alta capacidade de execução e de resolver problemas de forma direta. Relação com pouca hesitação e foco em resultados imediatos.', fracos: 'Impaciência mútua e baixa tolerância à reflexão ou ao emocional. Podem ser rígidos e ter dificuldade em aceitar que o outro desacelere. Conflitos tendem a ser diretos e rápidos, mas pouco elaborados.', analise_curta: 'Ambos são fogo e movimento. Match de ação imediata e eficiência, mas com impaciência dobrada. Se um precisar de tempo para refletir, o outro estará na porta esperando. O desafio é aprender a respirar junto e dar espaço à emoção.' },
+            "Curtos X Normais": { fortes: 'O Curto traz a ação e o resultado, o Normal traz o equilíbrio e a ponderação. O Normal modera o impulso do Curto e o Curto estimula a ação do Normal. Parceria estável e com boa sinergia entre prática e consciência.', fracos: 'O Curto pode considerar o Normal lento ou excessivamente emocional. O Normal pode se sentir pressionado ou desrespeitado pelo imediatismo do Curto. Conflito entre a velocidade e a necessidade de processar.', analise_curta: 'Um é fogo e movimento, o outro é equilíbrio e bom senso. Quando juntos, se completam, pois um acelera, o outro ajusta o ritmo. Mas se não houver sintonia, pode rolar atrito entre impulsividade e paciência. Match energético equilibrado, com potencial real de crescimento.' },
+            "Curtos X Longos": { fortes: 'O Longo traz a visão, a criatividade e a profundidade, e o Curto traz a concretização e a disciplina. O Curto aterra as ideias do Longo, e o Longo inspira a mente do Curto. Potencial para grandes realizações.', fracos: 'O Longo tende a ver o Curto como simplório ou insensível. O Curto se frustra com a abstração e a dispersão do Longo. Relação exige tolerância para a diferença de ritmo (rápido vs. reflexivo).', analise_curta: 'O Curto é pé no chão, o Longo é cabeça nas nuvens. O Curto oferece a âncora para as ideias criativas do Longo. O desafio é gigantesco: o Longo precisa descer e o Curto precisa subir, ou o atrito da diferença de ritmo pode levar à frustração mútua. Grande potencial de aprendizado.' },
+            "Normais X Normais": { fortes: 'Relação de harmonia, estabilidade e previsibilidade. Grande equilíbrio emocional e facilidade em encontrar o meio-termo. Ambas as partes valorizam a coerência e a sensibilidade.', fracos: 'Risco de acomodação, falta de impulso para grandes mudanças ou ousadia. Podem ser excessivamente cautelosos e evitar conflitos necessários, resultando em insatisfação velada.', analise_curta: 'Dupla de equilíbrio. Trazem estabilidade, coerência e previsibilidade para a relação. O ponto fraco é o excesso de cautela: evitam o confronto e podem cair na acomodação, faltando o impulso para grandes saltos ou mudanças. Match seguro, mas que precisa de um "empurrãozinho" para crescer.' },
+            "Normais X Longos": { fortes: 'O Longo traz a sensibilidade e a reflexão aprofundada, e o Normal, o enraizamento e a estabilidade. O Normal ajuda a estabilizar as emoções do Longo e o Longo aprofunda a percepção do Normal.', fracos: 'O Longo pode sentir falta de profundidade no Normal. O Normal pode se sentir sobrecarregado pela hipersensibilidade ou pela dispersão mental do Longo.', analise_curta: 'O Longo traz profundidade e intuição; o Normal, estabilidade e senso prático. Match que funciona se o Normal não for muito racional: o Normal oferece um chão seguro para o Longo sonhar. O desafio é a hipersensibilidade do Longo, que pode sobrecarregar o equilíbrio do Normal.' },
+            "Longos X Longos": { fortes: 'Relação de grande profundidade, criatividade e riqueza emocional. Ambas as partes valorizam a análise, a escuta e a abstração. Forte conexão no campo das ideias e da intuição.', fracos: 'Pouca conexão com a realidade prática e dificuldade em tomar decisões rápidas. Risco de dispersão e de se perder em reflexões excessivas. Podem ser hipersensíveis e facilmente sobrecarregados pela emoção.', analise_curta: 'Dupla de sonhadores, poetas e analistas. Grande conexão na imaginação e no campo emocional profundo. O problema é o mundo real: ambos podem se perder em análises e reflexões sem nunca tomar uma atitude. Match de alma, mas que precisa de um despertador e um calendário.' }
+        },
+        "Tamanho das Unhas": {
+            "Pouco Visíveis X Pouco Visíveis": { fortes: 'Dupla com alta flexibilidade e adaptabilidade. Fácil aceitação das ideias e mudanças um do outro. Cria um ambiente de não-julgamento e abertura.', fracos: 'Vulnerabilidade mútua à opinião externa e dificuldade em sustentar convicções firmes. Risco de indecisão e de serem influenciados por terceiros no relacionamento.', analise_curta: 'Ambos são flexíveis e abertos a novas verdades. Match fácil, com alta capacidade de adaptação. Mas o ponto fraco é a indecisão, pois nenhum dos dois terá firmeza total para tomar a dianteira e sustentar uma convicção contra a maré. Cuidado com a influência de terceiros.' },
+            "Pouco Visíveis X Normais": { fortes: 'O Normal traz estabilidade e assertividade ao flexível Pouco Visível. O Pouco Visível oferece maleabilidade para que o Normal não se torne rígido. Boa relação entre adaptação e consistência.', fracos: 'O Pouco Visível pode sentir que o Normal é rígido ou impositivo. O Normal pode ver o Pouco Visível como inconstante ou com pouca convicção. O Normal precisa cuidar para não anular a voz do Pouco Visível.', analise_curta: 'Um traz firmeza e convicção, o outro diálogo e flexibilidade. Essa mistura cria segurança emocional e espaço para a verdade de ambos. Mas o Normal precisa ter tato para não anular a voz do Pouco Visível, que pode ceder demais para manter a paz. Match de confiança.' },
+            "Pouco Visíveis X Bem Visíveis": { fortes: 'O Bem Visível traz firmeza, direção e segurança para o Pouco Visível. O Pouco Visível oferece flexibilidade e escuta que o Bem Visível precisa para não se fechar. Potencial para grande aprendizado mútuo.', fracos: 'Conflito de poder: o Bem Visível pode ser dogmático e tentar impor suas verdades. O Pouco Visível pode se sentir anulado ou ter suas crenças invalidadas, levando a um desequilíbrio de influência no relacionamento.', analise_curta: 'O Bem Visível é a rocha, o Pouco Visível é a água. Forte desequilíbrio de poder e influência. O Bem Visível precisa aprender a ouvir e o Pouco Visível precisa aprender a dizer "não". O match é de força e vulnerabilidade, com grande potencial de crescimento, mas risco de atrito constante.' },
+            "Normais X Normais": { fortes: 'Dupla com estabilidade. Relação equilibrada, previsível e com assertividade saudável. Ambas as partes conseguem ouvir e se posicionar com moderação. Forte senso de cooperação.', fracos: 'Tendência à zona de conforto e a evitar conflitos ou grandes debates. Risco de a relação se tornar monótona ou de cederem em excesso para manter a paz, sem abordar questões profundas.', analise_curta: 'Match de diplomacia e moderação. Ambos buscam o equilíbrio e a paz. Relação segura, mas com risco de evitar conflitos importantes em nome da harmonia. Precisam cultivar a coragem de discordar para a relação não estagnar na zona de conforto.' },
+            "Normais X Bem Visíveis": { fortes: 'O Bem Visível oferece firmeza e segurança nas decisões. O Normal traz equilíbrio e tato para modular a rigidez do Bem Visível. O Normal atua como um mediador que facilita a comunicação das verdades do Bem Visível.', fracos: 'O Bem Visível pode se frustrar com a moderação do Normal, querendo mais determinação. O Normal pode se sentir pressionado pela autoridade de convicção do Bem Visível. O Normal precisa garantir que sua voz não seja ofuscada.', analise_curta: 'Um traz firmeza e convicção, o outro diálogo e flexibilidade. Essa mistura cria segurança emocional e espaço para a verdade de ambos. Mas o Normal precisa ter tato para não anular a voz do Pouco Visível, que pode ceder demais para manter a paz. Match de confiança.' },
+            "Bem Visíveis X Bem Visíveis": { fortes: 'Relação de grande determinação, segurança e força de propósito. Ambas as partes são firmes em seus valores, criando uma base inabalável e confiável. Alta capacidade de liderança conjunta.', fracos: 'Conflito de dogmas e rigidez. Dificuldade extrema em ceder ou pedir desculpas. Relação pode ser marcada por debates intensos e falta de flexibilidade em aceitar a visão do outro, gerando exaustão.', analise_curta: 'Dupla de rochas e dogmas. A convicção é o forte, a rigidez é o ponto fraco. Match com potencial de força inabalável, mas alto risco de confronto por querer ter a última palavra. Ambos precisam aprender que ceder não é perder, e que a verdade pode ter várias faces.' }
+        }
+    };
+    
+    // Mapeamento dos resultados de Tamanho de Dedos (Ratio) para as categorias de relacionamento (Curtos/Normais/Longos)
+    const RATIO_MAP = {
+        'Dedos Curtos': 'Curtos',
+        'Normais para Curtos': 'Normais',
+        'Normais (Análise do Tamanho dos Dedos)': 'Normais',
+        'Normais para Longos': 'Normais',
+        'Dedos Longos': 'Longos'
+    };
+    
+    // NOVO: Função para garantir ordenação consistente das chaves de relacionamento
+    function sortRelationalKey(val1, val2) {
+        // Define uma ordem de prioridade para garantir que a chave gerada seja única (ex: 'A X B' ou 'B X A', mas nunca ambas)
+        const order = ['Egípcio', 'Grego/Romano', 'Quadrado', 'Curtos', 'Normais', 'Longos', 'Pouco Visíveis', 'Bem Visíveis'];
+        
+        // Se as chaves são as mesmas, retorna a chave única
+        if (val1 === val2) {
+            return `${val1} X ${val2}`;
+        }
+
+        // Se uma das chaves estiver na lista de ordem e for anterior, usa essa ordem
+        const index1 = order.indexOf(val1);
+        const index2 = order.indexOf(val2);
+
+        if (index1 !== -1 && index2 !== -1) {
+            return index1 < index2 ? `${val1} X ${val2}` : `${val2} X ${val1}`;
+        }
+        
+        // Se a ordenação personalizada falhar, usa a ordenação alfabética padrão (como fallback)
+        return [val1, val2].sort().join(' X ');
+    }
+    
+    // Função para criar o contêiner do anúncio (Mantida)
+    function createAdContainer() {
+        const ins = document.createElement('ins');
+        ins.className = 'adsbygoogle';
+        ins.style.display = 'block';
+        ins.setAttribute('data-ad-client', 'ca-pub-2957847231347233'); 
+        ins.setAttribute('data-ad-format', 'auto');
+        ins.setAttribute('data-full-width-responsive', 'true');
+        
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+
+        const container = document.createElement('div');
+        container.className = 'my-4 w-full text-center';
+        container.appendChild(ins);
+        
+        return container;
+    }
+    
+    // Função para renderizar o anúncio em um ID de contêiner específico
+    function renderAd(containerId) {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = '';
+            container.appendChild(createAdContainer());
+        }
+    }
+    // ----------------------------------------------------------------
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- ELEMENTOS HTML ---
+      const appMainContent = document.getElementById('app-main-content');
+      const splashScreen = document.getElementById('splash-screen');
+      const personalizationBlock = document.getElementById('personalization-block');
+      const uploadBlock = document.getElementById('upload-block');
+      const measurementBlock = document.getElementById('measurement-block');
+      const shapeInstructionBlock = document.getElementById('shape-instruction-block');
+      const ratioInstructionBlock = document.getElementById('ratio-instruction-block');
+      const shapeResultBlock = document.getElementById('shape-result-block');
+      const ratioResultBlock = document.getElementById('ratio-result-block');
+      const nailsQuestionBlock = document.getElementById('nails-question-block');
+      const comparisonReportBlock = document.getElementById('comparison-report-block');
+      const appHeaderContainer = document.getElementById('app-header-container');
+      const previewBlock = document.getElementById('preview-block');
+      const legalDocumentsBlock = document.getElementById('legal-documents-block');
+      
+      // NOVO: Barra de navegação inferior
+      const navBar = document.getElementById('app-navigation-bar');
+      const navBackButton = document.getElementById('nav-back-button');
+      const navNextButton = document.getElementById('nav-next-button');
+
+
+      // --- BOTÕES E FLUXO ---
+      const startButton = document.getElementById('start-button');
+      const continueToUploadButton = document.getElementById('continue-to-upload');
+      const analyzeRatioButton = document.getElementById('analyze-ratio-button');
+      const newRatioAnalysisButton = document.getElementById('new-ratio-analysis-button');
+      // Botão renomeado para gerenciar a transição P1->P2->Relatório
+      const continueToNextStep = document.getElementById('continue-to-next-step'); 
+      const startNewFullAnalysisButton = document.getElementById('start-new-full-analysis-button');
+      const imageUpload = document.getElementById('image-upload');
+      const redoButton = document.getElementById('redo-button');
+      const calculateButton = document.getElementById('calculate-button');
+      const nativeCameraInput = document.getElementById('native-camera-input');
+      
+      const nailsError = document.getElementById('nails-error');
+
+      // Referências para o loading e texto do botão
+      // CORREÇÃO: Pega a referência correta do loading spinner e dos textos
+      const loadingSpinner = document.getElementById('loading-spinner');
+      const buttonTextNext = document.getElementById('button-text-next');
+      const buttonTextGenerate = document.getElementById('button-text-generate');
+      const comparisonAnalysisResult = document.getElementById('comparison-analysis-result');
+      
+      const continueToShapeMeasurement = document.getElementById('continue-to-shape-measurement');
+      const continueToRatioMeasurement = document.getElementById('continue-to-ratio-measurement');
+      const backFromLegalButton = document.getElementById('back-from-legal-button');
+      
+      // NOVO: Botões de voltar dentro dos blocos (para desktop/scroll)
+      const backShapeInstruction = document.getElementById('back-shape-instruction');
+      const backMeasurement = document.getElementById('back-measurement');
+      const backShapeResult = document.getElementById('back-shape-result');
+      const backRatioInstruction = document.getElementById('back-ratio-instruction');
+      const backRatioResult = document.getElementById('back-ratio-result');
+      const backNailsQuestion = document.getElementById('back-nails-question');
+      const backFromReportButton = document.getElementById('back-from-report-button');
+
+
+      const canvas = document.getElementById('imageCanvas');
+      const ctx = canvas.getContext('2d');
+      const goldenRatioIdeal = 1.618;
+
+      // --- Variáveis de Estado Relacional ---
+      let points = [];
+      let currentStep = 1;
+      let img = new Image();
+      let imageUrl = '';
+      let currentAnalysisPhase = 'shape';
+      let nameP1 = '';
+      let nameP2 = '';
+      let currentPerson = 'P1'; // 'P1' ou 'P2'
+      // O objeto de dados não precisa mais de q1, q2, q3, q4
+      let analysisDataP1 = {unhas: '', finalImage: ''}; 
+      let analysisDataP2 = {unhas: '', finalImage: ''};
+      let currentRotation = 0;
+      let currentActiveBlockId = 'splash-screen'; // NOVO: Armazena o ID do bloco atual para lógica de navegação
+
+      // --- Elementos do Preview/Giro ---
+      const photoPreview = document.getElementById('photo-preview');
+      // Alterado: Retake photo button agora só volta para o upload, a lógica de clique no JS não é mais necessária aqui, mas mantemos o listener para o clique (que chamaria goBack)
+      const retakePhotoButton = document.getElementById('retake-photo-button'); 
+      const usePhotoButton = document.getElementById('use-photo-button');
+      const rotateLeftButton = document.getElementById('rotate-left-button');
+      const rotateRightButton = document.getElementById('rotate-right-button');
+      const cameraError = document.getElementById('camera-error');
+      
+      const shapeStepLabels = ['Ponta do Hálux', 'Ponta do 2º Dedo', 'Ponta do 3º Dedo', 'Ponta do 5º Dedo'];
+      const ratioStepLabels = ['Ponta do 2º Dedo', 'Início do 2º Dedo', 'Fim do Peito do Pé'];
+      
+      // Mapeamento de texto para emoji
+      const shapeEmojis = {
+          'Egípcio': '🚄', // CORRIGIDO
+          'Grego/Romano': '🗂️', // CORRIGIDO
+          'Quadrado': '🌅' // CORRIGIDO
+      };
+
+      // --- Funções Auxiliares de Formato ---
+      
+      function formatName(name) {
+          if (!name) return '';
+          return name.charAt(0).toUpperCase() + name.slice(1);
+      }
+
+      function isEgyptianHarmonic(L1, L2, L3, L5) {
+          if (L1 > L2 * 1.07 && L1 > L5) {
+              const d1 = L1 - L2;
+              const d2 = L2 - L3;
+              if (L2 > L3 && Math.abs(d1 - d2) / Math.max(d1, d2, 1) < 0.6) {
+                  return true;
+              }
+              if (L1 > L2 * 1.2 && L1 > L5 * 1.2) {
+                   return true;
+              }
+          }
+          return false;
+      }
+
+      function isSquareFoot(L1, L2, L3, L5) {
+          const max = Math.max(L1, L2, L3); 
+          const min = Math.min(L1, L2, L3);
+          const range = max - min;
+          if (range / min <= 0.08) return true;
+          if (L2 > L1 && L2 > L3 && Math.abs(L1 - L3) / Math.min(L1, L3, 1) < 0.15) return true;
+          return false;
+      }
+      
+      function isMobileDevice() {
+          return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      }
+
+      function setupEnvironment() {
+          const isMobile = isMobileDevice();
+          const openCameraButtonLabel = document.getElementById('open-camera-button-label');
+
+          if (isMobile) {
+              openCameraButtonLabel.classList.remove('hidden');
+              cameraError.classList.add('hidden');
+          } else {
+              openCameraButtonLabel.classList.add('hidden');
+              cameraError.classList.remove('hidden');
+              cameraError.textContent = 'A função "Tirar Foto" está disponível apenas em dispositivos móveis. Por favor, use o botão "Fazer Upload" no computador.';
+          }
+      }
+      
+      function setupNavigationButtons(blockId) {
+        const backButtons = document.querySelectorAll('[id^="back-"]');
+        backButtons.forEach(btn => {
+            // Controla a visibilidade dos botões inline (desktop/tablet)
+            const parentBlock = btn.closest('.step-container');
+            // Remove o display flex/block dos botões inline para o mobile navigation bar assumir o controle
+            if (parentBlock && parentBlock.id === blockId && !isMobileDevice()) {
+                btn.style.display = 'flex';
+            } else if (btn) {
+                btn.style.display = 'none';
+            }
+        });
+
+        // Define quais blocos ativam a barra de navegação móvel (a partir da instrução de formato)
+        const flowBlocks = [shapeInstructionBlock.id, measurementBlock.id, shapeResultBlock.id, ratioInstructionBlock.id, ratioResultBlock.id, nailsQuestionBlock.id, comparisonReportBlock.id];
+        const showNav = isMobileDevice() && flowBlocks.includes(blockId);
+
+        navBar.classList.toggle('show', showNav);
+        navNextButton.classList.add('hidden'); // Manter o next button oculto
+        
+        // Desabilita o botão 'Voltar' no relatório, pois o fluxo principal é o botão "Voltar à Análise P2"
+        const disableBack = [comparisonReportBlock.id].includes(blockId);
+        navBackButton.disabled = disableBack;
+      }
+
+
+      function showBlock(blockToShow) {
+        const allBlocks = [splashScreen, personalizationBlock, uploadBlock, shapeInstructionBlock, ratioInstructionBlock, measurementBlock, shapeResultBlock, ratioResultBlock, nailsQuestionBlock, comparisonReportBlock, previewBlock, legalDocumentsBlock];
+        
+        // NOVO: Renderiza anúncios ao mostrar o bloco de Personalização
+        if (blockToShow === personalizationBlock) {
+            // renderAd('ads-personalization'); // Adicionar div se usar AdSense manual
+        } 
+
+        // Adiciona a classe 'hiding' ao bloco ativo atual
+        allBlocks.forEach(block => {
+          if (block && block.classList.contains('active-block')) {
+            block.classList.add('hiding');
+          }
+        });
+
+        const targetId = blockToShow ? blockToShow.id : null;
+
+        setTimeout(() => {
+          // Remove as classes de transição e ativo de todos os blocos
+          allBlocks.forEach(block => {
+            if (block) block.classList.remove('active-block', 'hiding');
+          });
+          // Ativa o bloco de destino
+          if (blockToShow) blockToShow.classList.add('active-block');
+          
+          currentActiveBlockId = targetId; // Atualiza o ID do bloco ativo
+          setupNavigationButtons(currentActiveBlockId); // Configura o nav bar
+          
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 300);
+      }
+
+      function processImageAndContinue(dataUrl) {
+        img.onload = () => {
+            const maxWidth = 800, maxHeight = 600;
+            let { width, height } = img;
+            const aspectRatio = img.width / img.height;
+            if (img.width > maxWidth || img.height > maxHeight) {
+                if (aspectRatio > 1) { width = maxWidth; height = width / aspectRatio; } 
+                else { height = maxHeight; width = height * aspectRatio; }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            
+            photoPreview.src = dataUrl;
+            imageUrl = dataUrl;
+            currentRotation = 0;
+            photoPreview.style.transform = 'rotate(0deg)';
+            
+            // CORREÇÃO: Atualiza o nome de destino na tela de confirmação
+            document.getElementById('preview-target-name').textContent = formatName(currentPerson === 'P1' ? nameP1 : nameP2);
+            showBlock(previewBlock);
+        };
+        img.src = dataUrl;
+      }
+      
+      // Função para iniciar o fluxo de medição para o Formato
+      function startShapeAnalysis(imageOverrideUrl = imageUrl) { 
+          currentAnalysisPhase = 'shape'; 
+          points = []; 
+          currentStep = 1; 
+          
+          const targetName = currentPerson === 'P1' ? nameP1 : nameP2;
+          document.getElementById('shape-target-name').textContent = formatName(targetName);
+          document.getElementById('ratio-target-name').textContent = formatName(targetName);
+          document.getElementById('measurement-target-name').textContent = formatName(targetName);
+          
+          img.onload = () => {
+              showBlock(shapeInstructionBlock); 
+          };
+          img.src = imageOverrideUrl;
+      }
+      
+      // Função para iniciar o fluxo de medição para o Tamanho dos Dedos
+      function startRatioAnalysis() { 
+          currentAnalysisPhase = 'ratio'; 
+          points = []; 
+          currentStep = 1; 
+          showBlock(ratioInstructionBlock); 
+      }
+      
+      // Função para atualizar a UI do bloco de medição
+      function updateUI() {
+        const labels = currentAnalysisPhase === 'shape' ? shapeStepLabels : ratioStepLabels;
+        const buttonText = currentAnalysisPhase === 'shape' ? 'Calcular Formato' : 'Calcular Análise do Tamanho dos Dedos';
+        document.getElementById('instruction').textContent = currentStep <= labels.length ? `Clique para marcar o ponto ${currentStep}: ${labels[currentStep - 1]}` : `Marcações concluídas. Clique em "${buttonText}".`;
+        calculateButton.classList.toggle('hidden', currentStep <= labels.length);
+        calculateButton.textContent = buttonText;
+        canvas.classList.toggle('custom-cursor', currentStep <= labels.length);
+        const progressContainer = document.getElementById('progress-container');
+        progressContainer.innerHTML = '';
+        progressContainer.className = `mt-4 grid gap-2 grid-cols-${labels.length}`;
+        labels.forEach((label, index) => {
+          const isCompleted = index < currentStep - 1, isCurrent = index === currentStep - 1;
+          const bgColor = isCompleted ? 'bg-green-100 border-green-300 text-green-800' : isCurrent ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-gray-100 border-gray-300 text-gray-600';
+          progressContainer.innerHTML += `<div class="p-2 text-sm rounded-lg border text-center ${bgColor}">${index + 1}. ${label}</div>`;
+        });
+      }
+
+      // Função de Desenho no Canvas (mantida)
+      function drawCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        if (currentAnalysisPhase === 'shape') {
+          const refY = canvas.height / 2;
+          ctx.beginPath(); ctx.moveTo(0, refY); ctx.lineTo(canvas.width, refY);
+          Object.assign(ctx, { strokeStyle: 'rgba(239, 68, 68, 0.1)', lineWidth: 3 }).setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
+        }
+        points.forEach((point, index) => {
+          if (currentAnalysisPhase === 'shape') {
+            const refY = canvas.height / 2;
+            ctx.beginPath(); ctx.moveTo(point.x, point.y); ctx.lineTo(point.x, refY);
+            Object.assign(ctx, { strokeStyle: 'rgba(255, 0, 0, 0.6)', lineWidth: 3 }).stroke();
+            if (index > 0) {
+              ctx.beginPath(); ctx.moveTo(points[index-1].x, points[index-1].y); ctx.lineTo(point.x, point.y);
+              Object.assign(ctx, { strokeStyle: 'rgba(0, 0, 255, 0.3)', lineWidth: 2 }).stroke();
+            }
+            const lengthValue = Math.abs(point.y - refY).toFixed(0);
+            Object.assign(ctx, { fillStyle: '#ff0000', font: 'bold 12px Arial' }).fillText(`${lengthValue}px`, point.x + 10, (point.y + refY) / 2);
+          } else if (currentAnalysisPhase === 'ratio' && points.length >= 2) {
+            ctx.beginPath(); ctx.moveTo(points[0].x, points[0].y); ctx.lineTo(points[1].x, points[1].y);
+            Object.assign(ctx, { strokeStyle: '#ef4444', lineWidth: 3 }).stroke();
+            if (points.length >= 3) {
+              ctx.beginPath(); ctx.moveTo(points[1].x, points[1].y); ctx.lineTo(points[2].x, points[2].y);
+              Object.assign(ctx, { strokeStyle: '#3b82f6' }).setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
+            }
+          }
+          ctx.beginPath(); ctx.arc(point.x, point.y, 8, 0, 2 * Math.PI);
+          Object.assign(ctx, { fillStyle: currentAnalysisPhase === 'ratio' ? (index < 2 ? '#ef4444' : '#3b82f6') : '#ff0000' }).fill();
+          Object.assign(ctx, { strokeStyle: '#ffffff', lineWidth: 2 }).stroke();
+          Object.assign(ctx, { fillStyle: '#ffffff', font: 'bold 14px Arial', textAlign: 'center' }).fillText(index + 1, point.x, point.y + 4);
+        });
+      }
+      
+      // Função para salvar o resultado da fase (Formato ou Ratio)
+      function saveAnalysisResult(type, result) {
+          const targetData = currentPerson === 'P1' ? analysisDataP1 : analysisDataP2;
+          
+          if (type === 'shape') {
+              targetData.shape = result;
+              targetData.shapeImage = imageUrl; // Salva a imagem final da Pessoa 1
+              if (currentPerson === 'P2') {
+                  targetData.shapeImage = imageUrl; // Salva a imagem final da Pessoa 2
+              }
+          } else if (type === 'ratio') {
+              targetData.ratio = result;
+          } else if (type === 'questions') {
+              // Agora, 'result' contém apenas { unhas: X, finalImage: Y }
+              Object.assign(targetData, result);
+          }
+          
+          if (currentPerson === 'P1') { analysisDataP1 = targetData; } 
+          else { analysisDataP2 = targetData; }
+      }
+
+      // Classifica Formato e salva
+      function classifyShape() {
+        if (points.length < 4) return;
+        const refY = canvas.height / 2;
+        const [L1, L2, L3, L5] = [
+            Math.abs(points[0].y - refY), Math.abs(points[1].y - refY), 
+            Math.abs(points[2].y - refY), Math.abs(points[3].y - refY)
+        ];
+        let shapeText, shapeEmoji, reasoning;
+        
+        if (isEgyptianHarmonic(L1, L2, L3, L5)) {
+            [shapeText, shapeEmoji, reasoning] = ['Egípcio', shapeEmojis.Egípcio, 'O dedão é dominante e há uma progressão de declínio perceptível nos dedos adjacentes, indicando predominância do pensamento linear e organização.'];
+        } else if (isSquareFoot(L1, L2, L3, L5)) {
+            [shapeText, shapeEmoji, reasoning] = ['Quadrado', shapeEmojis.Quadrado, 'Os dedos centrais têm tamanhos muito semelhantes, com pouca variação, sugerindo uma estrutura de pensamento digital, com foco na integração e coerência entre as partes.'];
+        } else {
+            [shapeText, shapeEmoji, reasoning] = ['Grego/Romano', shapeEmojis['Grego/Romano'], 'O formato apresenta uma sequência que não se encaixa nos padrões Egípcio ou Quadrado, sendo classificado como uma variação do pé Grego/Romano, com tendência ao pensamento sistêmico e à visão global dos processos.'];
+        }
+        
+        saveAnalysisResult('shape', shapeText);
+        
+        document.getElementById('shape-result-target-name').textContent = formatName(currentPerson === 'P1' ? nameP1 : nameP2);
+        document.getElementById('shape-text').textContent = shapeText;
+        document.getElementById('shape-emoji').textContent = shapeEmoji;
+        document.getElementById('classification-reasoning').textContent = reasoning;
+        document.getElementById('shape-result-image').src = imageUrl;
+        showBlock(shapeResultBlock);
+      }
+      
+      // Classifica Tamanho Dedos e salva
+      function classifyRatio(ratio) {
+        const diff = Math.abs(ratio - goldenRatioIdeal) / goldenRatioIdeal;
+        let classification;
+        if (diff <= 0.05) { classification = { text: 'Normais (Análise do Tamanho dos Dedos)', color: 'result-perfect' }; }
+        else if (ratio <= 2.0) { classification = { text: 'Dedos Longos', color: 'result-very-close' }; }
+        else if (ratio >= 3.0) { classification = { text: 'Dedos Curtos', color: 'result-far' }; }
+        else { classification = ratio > 2.5 ? { text: 'Normais para Curtos', color: 'result-close' } : { text: 'Normais para Longos', color: 'result-close' }; }
+        
+        saveAnalysisResult('ratio', classification.text);
+        
+        document.getElementById('ratio-result-target-name').textContent = formatName(currentPerson === 'P1' ? nameP1 : nameP2);
+        document.getElementById('ratio-result-ratio').textContent = ratio.toFixed(3);
+        document.getElementById('ratio-result-ratio').className = `text-5xl font-extrabold mb-4 ${classification.color}`;
+        document.getElementById('ratio-result-text').textContent = classification.text;
+        document.getElementById('ratio-result-image').src = imageUrl;
+        showBlock(ratioResultBlock);
+      }
+
+      function calculateAndDisplayResult() {
+        if (currentAnalysisPhase === 'ratio') {
+          if (points.length < 3) return;
+          const toeLength = Math.hypot(points[1].x - points[0].x, points[1].y - points[0].y);
+          const footLength = Math.hypot(points[2].x - points[1].x, points[2].y - points[1].y);
+          const ratio = footLength / toeLength;
+          classifyRatio(ratio);
+        } else if (currentAnalysisPhase === 'shape') {
+            classifyShape();
+        }
+      }
+      
+      // Função principal para gerar o Relatório de Comparação
+      function generateComparisonReport() {
+          const p1 = analysisDataP1;
+          const p2 = analysisDataP2;
+          
+          const name1 = formatName(nameP1);
+          const name2 = formatName(nameP2);
+
+          // Função para calcular a pontuação de match (0-10)
+          function calculateMatchScore(shapeKey, ratioKey, unhasKey) {
+              let score = 10;
+              let frictionPoints = 0;
+
+              // Calcula o atrito com base nos Pontos Fracos/Desafios (analise_curta)
+              // 1. Formato (Pensamento)
+              const shapeRel = RELATIONAL_DATA.Formato[shapeKey];
+              if (shapeRel && (shapeRel.fracos.includes('rigidez') || shapeRel.fracos.includes('conflitos de controle') || shapeRel.fracos.includes('paralisia por análise') || shapeRel.fracos.includes('dispersão'))) {
+                  frictionPoints += 1.5;
+              }
+              // 2. Tamanho Dedos (Ação/Ritmo)
+              const ratioRel = RELATIONAL_DATA['Tamanho Dedos'][ratioKey];
+              if (ratioRel && (ratioRel.fracos.includes('Impaciência') || ratioRel.fracos.includes('Conflito entre a velocidade') || ratioRel.fracos.includes('pouca conexão com a realidade prática') || ratioRel.fracos.includes('sobrecarregado'))) {
+                  frictionPoints += 1.5;
+              }
+              // 3. Unhas (Convicção/Assertividade)
+              const unhasRel = RELATIONAL_DATA['Tamanho das Unhas'][unhasKey];
+              if (unhasRel && (unhasRel.fracos.includes('rigidez') || unhasRel.fracos.includes('conflito de poder') || unhasRel.fracos.includes('dogmático') || unhasRel.fracos.includes('indecisão'))) {
+                  frictionPoints += 2.0; // Unhas têm peso maior na assertividade relacional
+              }
+              
+              // Pontuação baseada em atrito: Max 5 pontos de atrito (Max Score é 10)
+              const finalScore = Math.max(7.5, 10 - frictionPoints); // Base mínima de 7.5 para Match
+
+              // Ajuste o score para que o máximo seja 10 e o mínimo seja 5.0 (garantindo que não seja muito baixo)
+              return Math.min(10, finalScore).toFixed(1);
+          }
+
+
+          // --- GERAÇÃO DAS CHAVES ---
+          const shapeKey = sortRelationalKey(p1.shape, p2.shape);
+          const ratioP1Key = RATIO_MAP[p1.ratio];
+          const ratioP2Key = RATIO_MAP[p2.ratio];
+          const ratioKey = sortRelationalKey(ratioP1Key, ratioP2Key);
+          const unhasKey = sortRelationalKey(p1.unhas, p2.unhas);
+
+          // --- PONTUAÇÃO ---
+          const matchScore = calculateMatchScore(shapeKey, ratioKey, unhasKey);
+          
+          // --- OBTENÇÃO DOS DADOS RELACIONAIS ---
+          const shapeRel = RELATIONAL_DATA.Formato[shapeKey];
+          const ratioRel = RELATIONAL_DATA['Tamanho Dedos'][ratioKey];
+          const unhasRel = RELATIONAL_DATA['Tamanho das Unhas'][unhasKey];
+          
+          // Fallback para análises (apenas para exibição)
+          const shapeAnaliseCurta = shapeRel ? shapeRel.analise_curta : 'Análise indisponível.';
+          const ratioAnaliseCurta = ratioRel ? ratioRel.analise_curta : 'Análise indisponível.';
+          const unhasAnaliseCurta = unhasRel ? unhasRel.analise_curta : 'Análise indisponível.';
+
+          // --- INJEÇÃO NO RELATÓRIO ---
+          
+          // CORRIGIDO: Injeção dos nomes no cabeçalho
+          document.getElementById('report-target-name-p1').textContent = name1;
+          document.getElementById('report-target-name-p2').textContent = name2;
+          
+          // CORRIGIDO: Injeção dos dados individuais
+          document.getElementById('report-p1-title').textContent = `Análise de ${name1}`;
+          document.getElementById('report-p2-title').textContent = `Análise de ${name2}`;
+          
+          document.getElementById('summary-p1-shape').textContent = p1.shape;
+          document.getElementById('summary-p1-ratio').textContent = p1.ratio;
+          document.getElementById('summary-p1-nails').textContent = p1.unhas;
+          document.getElementById('final-report-image-p1').src = p1.finalImage; // CORRIGIDO
+          
+          document.getElementById('summary-p2-shape').textContent = p2.shape;
+          document.getElementById('summary-p2-ratio').textContent = p2.ratio;
+          document.getElementById('summary-p2-nails').textContent = p2.unhas;
+          document.getElementById('final-report-image-p2').src = p2.finalImage; // CORRIGIDO
+
+          let report = '';
+          
+          // Título de Abertura
+          report += `<h2 class="text-3xl font-extrabold text-gray-800 text-center mb-6">Compatibilidade dos Pés de</h2>
+                     <p class="text-2xl font-bold text-teal-600 mt-1 text-center mb-10">${name1} & ${name2}</p>
+                     <p class="text-xl text-center mb-10 text-teal-600">Será que dá match? Vamos descobrir o que os pés indicam!</p>`; // Movido o "Será que dá match" para cá
+
+          // 1. Formato dos Pés (Pensamento)
+          report += `<div class="mt-4"><h4 class="text-xl font-bold text-gray-800 mb-2">Com relação ao formato dos pés:</h4>`;
+          // CORREÇÃO: Removendo parênteses dos nomes e mantendo a formatação X
+          report += `<p class="mb-1 font-semibold">${name1}=${p1.shape} × ${name2}=${p2.shape}</p>`;
+          report += `<p class="mb-4">${shapeAnaliseCurta}</p></div>`;
+
+          // 2. Tamanho dos Dedos (Ação/Ritmo)
+          report += `<div class="mt-4"><h4 class="text-xl font-bold text-gray-800 mb-2">Com relação ao tamanho dos dedos:</h4>`;
+          // CORREÇÃO: Removendo parênteses dos nomes e prefixando 'dedos'
+          report += `<p class="mb-1 font-semibold">${name1}=dedos ${ratioP1Key} × ${name2}=dedos ${ratioP2Key}</p>`;
+          report += `<p class="mb-4">${ratioAnaliseCurta}</p></div>`;
+
+          // 3. Tamanho das Unhas (Convicção)
+          report += `<div class="mt-4"><h4 class="text-xl font-bold text-gray-800 mb-2">Com relação ao tamanho das Unhas:</h4>`;
+          // CORREÇÃO: Removendo parênteses dos nomes
+          report += `<p class="mb-1 font-semibold">${name1}=${p1.unhas} × ${name2}=${p2.unhas}</p>`;
+          report += `<p class="mb-4">${unhasAnaliseCurta}</p></div>`;
+          
+          // Resultado Final — O Veredito dos Pés
+          report += `<div class="mt-8 pt-4 border-t-2 border-gray-300">
+              <h4 class="text-2xl font-extrabold text-red-700 text-center mb-4">Resultado Final — O Veredito dos Pés:</h4>
+              
+              <div class="text-center bg-green-50 p-6 rounded-lg shadow-md mb-8">
+                  <p class="text-lg font-semibold text-gray-800 mb-3">${name1} & ${name2} têm tudo para se entender bem — são parecidos na cabeça, complementares na ação e desafiadores nas convicções.</p>
+                  <p class="text-lg font-semibold text-gray-800">Quando equilibram mente, ritmo e firmeza, o relacionamento flui com maturidade e leveza.</p>
+              </div>
+
+              <!-- Pontuação Visual -->
+              <div class="text-center">
+                  <p class="text-4xl font-extrabold text-teal-600">${matchScore} / 10</p>
+                  <p class="text-lg font-bold text-gray-700 mb-6">Compatibilidade Geral</p>
+                  <div class="relative w-full max-w-sm mx-auto h-3 bg-gray-200 rounded-full">
+                      <div class="absolute h-3 rounded-full bg-teal-500 transition-all duration-1000" style="width: ${matchScore * 10}%;"></div>
+                  </div>
+              </div>
+
+              <p class="text-center text-lg font-semibold text-gray-700 mt-6">Um match com ótimo potencial — basta que cada um aprenda o passo do outro.</p>
+              
+              <div class="mt-8 pt-4 border-t border-teal-200">
+                  <h4 class="text-xl font-bold text-teal-800 mb-2">A Fórmula de Compatibilidade</h4>
+                  <p class="text-sm leading-relaxed">
+                      A união é a arte de harmonizar as diferenças. Onde há Pontos Fortes, existe fluidez e segurança e onde há Pontos Fracos, existe um convite para o crescimento. Os pés revelam que, para ${name1} e ${name2} prosperarem, é crucial que ambos se dediquem a compreender e respeitar o ritmo de pensamento e a rigidez de convicção um do outro.
+                  </p>
+              </div>
+          </div>
+          
+          <!-- Assinatura -->
+          <p class="mt-4 text-right text-xs">Fraternos Abraços!<br><strong>Irmo Zuccato Neto</strong></p>`;
+          
+          comparisonAnalysisResult.innerHTML = report;
+          showBlock(comparisonReportBlock);
+          loadingSpinner.classList.add('hidden');
+          // continueToNextStep é o botão de ação principal, então ele precisa ser reativado
+          if (continueToNextStep) continueToNextStep.disabled = false;
+      }
+      
+      // Funções de Inicialização/Reset (Adaptadas ao fluxo P1/P2)
+      function startNewAnalysis() {
+        // As respostas agora são apenas unhas e a imagem
+        analysisDataP1 = {unhas: '', finalImage: ''}; 
+        analysisDataP2 = {unhas: '', finalImage: ''};
+        nameP1 = ''; nameP2 = '';
+        currentPerson = 'P1'; 
+        
+        // Zera os inputs de nome
+        document.getElementById('name-p1-input').value = '';
+        document.getElementById('name-p2-input').value = '';
+        
+        // Reset do botão final
+        if (buttonTextNext) buttonTextNext.classList.remove('hidden');
+        if (buttonTextGenerate) buttonTextGenerate.classList.add('hidden');
+        if (continueToNextStep) continueToNextStep.textContent = 'Prosseguir para a Análise da Pessoa 2';
+        
+        setupEnvironment(); 
+        showBlock(personalizationBlock);
+      }
+      
+      function continueToNextPerson() {
+          currentPerson = 'P2';
+          
+          // Troca o texto do botão para "Gerar Relatório"
+          if (buttonTextNext) buttonTextNext.classList.add('hidden');
+          if (buttonTextGenerate) buttonTextGenerate.classList.remove('hidden');
+          
+          // Vai para a tela de Upload do Pé 2
+          let nameForDisplay = nameP2;
+          document.getElementById('target-name-display').textContent = formatName(nameForDisplay);
+          
+          // Limpa a seleção de unhas para a próxima pessoa
+          document.querySelectorAll('input[name="nails-visibility"]').forEach(radio => radio.checked = false);
+          document.querySelectorAll('#nails-question-block label').forEach(label => label.classList.remove('border-purple-500', 'bg-purple-100')); 
+          
+          showBlock(uploadBlock);
+      }
+      
+      // NOVO: Função para Voltar (Go Back) - Lógica do fluxo
+      function goBack() {
+        switch (currentActiveBlockId) {
+            case shapeInstructionBlock.id:
+                // Da instrução de formato, volta para a tela de prévia/foto
+                showBlock(previewBlock);
+                break;
+            case measurementBlock.id:
+                // Da medição (Shape ou Ratio), volta para a instrução anterior
+                if (currentAnalysisPhase === 'shape') {
+                    showBlock(shapeInstructionBlock);
+                } else {
+                    showBlock(ratioInstructionBlock);
+                }
+                break;
+            case shapeResultBlock.id:
+                // Do resultado do formato, volta para a medição do formato
+                showBlock(measurementBlock);
+                // Configura o bloco de medição para a fase de formato
+                currentAnalysisPhase = 'shape'; 
+                updateUI();
+                break;
+            case ratioInstructionBlock.id:
+                // Da instrução de ratio, volta para o resultado do formato
+                showBlock(shapeResultBlock);
+                break;
+            case ratioResultBlock.id:
+                // Do resultado do ratio, volta para a medição do ratio
+                showBlock(measurementBlock);
+                // Configura o bloco de medição para a fase de ratio
+                currentAnalysisPhase = 'ratio';
+                updateUI();
+                break;
+            case nailsQuestionBlock.id:
+                // Da análise de unhas, volta para o resultado do ratio
+                showBlock(ratioResultBlock);
+                break;
+            case uploadBlock.id:
+                 // Se estiver no upload do P2, volta para a análise de unhas do P1
+                if (currentPerson === 'P2') {
+                    currentPerson = 'P1';
+                    showBlock(nailsQuestionBlock);
+                    // Restaura o estado visual do botão para P1 (próximo é P2)
+                    if (buttonTextNext) buttonTextNext.classList.remove('hidden');
+                    if (buttonTextGenerate) buttonTextGenerate.classList.add('hidden');
+                } else {
+                    // Se estiver no upload do P1, volta para a tela de nomes
+                    showBlock(personalizationBlock);
+                }
+                break;
+            case previewBlock.id:
+                // Da prévia, volta para o upload (permite trocar a foto)
+                showBlock(uploadBlock);
+                break;
+            case comparisonReportBlock.id:
+                // Do relatório final, volta para as unhas do P2
+                currentPerson = 'P2';
+                // Restaura o estado visual do botão para P2 (próximo é Relatório)
+                if (buttonTextNext) buttonTextNext.classList.add('hidden');
+                if (buttonTextGenerate) buttonTextGenerate.classList.remove('hidden');
+                showBlock(nailsQuestionBlock);
+                break;
+            case legalDocumentsBlock.id:
+                // Do bloco legal, volta para o último bloco normal
+                // (Implementado no listener backFromLegalButton, mas adicionado aqui por segurança)
+                const lastNormalBlock = document.getElementById(currentActiveBlockId);
+                if (lastNormalBlock) { showBlock(lastNormalBlock); } 
+                else { showBlock(personalizationBlock); }
+                break;
+            default:
+                // Para splash/personalization (que são o início do fluxo)
+                console.warn(`Ação de voltar não definida para o bloco: ${currentActiveBlockId}`);
+                break;
+        }
+      }
+
+      // --- Event Listeners ---
+      if(startButton) startButton.addEventListener('click', () => { 
+          setupEnvironment(); 
+          showBlock(personalizationBlock); 
+          setTimeout(() => {
+              if (splashScreen) splashScreen.remove();
+              if (appHeaderContainer) appHeaderContainer.remove(); 
+          }, 400); 
+      });
+      
+      if(continueToUploadButton) continueToUploadButton.addEventListener('click', () => { 
+          nameP1 = document.getElementById('name-p1-input').value.trim();
+          nameP2 = document.getElementById('name-p2-input').value.trim();
+          const errorEl = document.getElementById('personalization-error');
+          
+          if (!nameP1 || !nameP2) return errorEl.classList.remove('hidden');
+          
+          errorEl.classList.add('hidden');
+          document.getElementById('target-name-display').textContent = formatName(nameP1);
+          document.getElementById('preview-target-name').textContent = formatName(nameP1);
+          showBlock(uploadBlock);
+      });
+      
+      // Listener para o input de foto/upload
+      if(nativeCameraInput) nativeCameraInput.addEventListener('change', e => e.target.files[0] && (reader => { 
+          reader.onload = evt => { e.target.value = ''; processImageAndContinue(evt.target.result); }; 
+          reader.readAsDataURL(e.target.files[0]); 
+      })(new FileReader()));
+      if(imageUpload) imageUpload.addEventListener('change', e => e.target.files[0] && (reader => { 
+          reader.onload = evt => { e.target.value = ''; processImageAndContinue(evt.target.result); }; 
+          reader.readAsDataURL(e.target.files[0]); 
+      })(new FileReader()));
+
+
+      if(canvas) canvas.addEventListener('click', e => {
+        const labels = currentAnalysisPhase === 'shape' ? shapeStepLabels : ratioStepLabels;
+        if (currentStep > labels.length) return;
+        const rect = canvas.getBoundingClientRect();
+        points.push({ x: (e.clientX - rect.left) * (canvas.width / rect.width), y: (e.clientY - rect.top) * (canvas.height / rect.height) });
+        currentStep++; drawCanvas(); updateUI();
+        if (currentStep > labels.length) {
+          canvas.classList.remove('custom-cursor');
+          setTimeout(calculateAndDisplayResult, 600);
+        }
+      });
+      
+      if(calculateButton) calculateButton.addEventListener('click', calculateAndDisplayResult);
+      if(redoButton) redoButton.addEventListener('click', () => { points = []; currentStep = 1; canvas.classList.add('custom-cursor'); drawCanvas(); updateUI(); showBlock(measurementBlock); });
+      if(continueToShapeMeasurement) continueToShapeMeasurement.addEventListener('click', () => { showBlock(measurementBlock); drawCanvas(); updateUI(); });
+      if(analyzeRatioButton) analyzeRatioButton.addEventListener('click', startRatioAnalysis);
+      if(continueToRatioMeasurement) continueToRatioMeasurement.addEventListener('click', () => { showBlock(measurementBlock); drawCanvas(); updateUI(); });
+      
+      if(newRatioAnalysisButton) newRatioAnalysisButton.addEventListener('click', () => { 
+          const targetName = currentPerson === 'P1' ? nameP1 : nameP2;
+          document.getElementById('nails-result-image').src = imageUrl;
+          document.getElementById('nails-target-name').textContent = formatName(targetName);
+          showBlock(nailsQuestionBlock); 
+      });
+      
+      // NOVO FLUXO (Substitui 'continueToPersonalQuestions' e 'nextPersonButton')
+      if(continueToNextStep) continueToNextStep.addEventListener('click', () => {
+          const unhas = document.querySelector('input[name="nails-visibility"]:checked'); 
+          if (!unhas) return document.getElementById('nails-error').classList.remove('hidden');
+          
+          document.getElementById('nails-error').classList.add('hidden');
+          
+          // 1. Salva a escolha da unha (e final image) no objeto de dados atual
+          saveAnalysisResult('questions', { unhas: unhas.value, finalImage: imageUrl }); 
+
+          // 2. Inicia estado de loading
+          loadingSpinner.classList.remove('hidden');
+          continueToNextStep.disabled = true;
+
+          // 3. Transição P1 -> P2 ou Geração de Relatório (P2)
+          if (currentPerson === 'P1') {
+              // P1 terminou. Prepara para ir para P2.
+              
+              setTimeout(() => {
+                  loadingSpinner.classList.add('hidden');
+                  continueToNextStep.disabled = false;
+                  continueToNextPerson(); // Chama a função que troca a pessoa e mostra o upload
+              }, 1000);
+              
+          } else { // currentPerson === 'P2'
+              // P2 terminou. Gera o relatório.
+              
+              // Atualiza o texto do botão (visualmente)
+              if (buttonTextNext) buttonTextNext.classList.add('hidden');
+              if (buttonTextGenerate) buttonTextGenerate.classList.remove('hidden');
+              
+              setTimeout(() => {
+                  generateComparisonReport();
+                  // Reset: button state
+                  loadingSpinner.classList.add('hidden');
+                  continueToNextStep.disabled = false;
+                  // Reinicia a visualização do botão para um possível novo ciclo
+                  if (buttonTextNext) buttonTextNext.classList.remove('hidden');
+                  if (buttonTextGenerate) buttonTextGenerate.classList.add('hidden');
+              }, 1500); 
+          }
+      });
+      
+      if(startNewFullAnalysisButton) startNewFullAnalysisButton.addEventListener('click', startNewAnalysis);
+      
+      // Preview/Rotate logic (mantido)
+      if(rotateLeftButton) rotateLeftButton.addEventListener('click', () => { currentRotation = (currentRotation - 90) % 360; photoPreview.style.transform = `rotate(${currentRotation}deg)`; });
+      if(rotateRightButton) rotateRightButton.addEventListener('click', () => { currentRotation = (currentRotation + 90) % 360; photoPreview.style.transform = `rotate(${currentRotation}deg)`; });
+      if(usePhotoButton) usePhotoButton.addEventListener('click', () => { 
+        if (!photoPreview.src) return;
+        
+        if (currentRotation !== 0) {
+          const tempCanvas = document.createElement('canvas');
+          const tempCtx = tempCanvas.getContext('2d');
+          const tempImg = new Image();
+          tempImg.onload = () => {
+            if (currentRotation === 90 || currentRotation === -270 || currentRotation === 270 || currentRotation === -90) {
+              tempCanvas.width = tempImg.height; tempCanvas.height = tempImg.width;
+            } else {
+              tempCanvas.width = tempImg.width; tempCanvas.height = tempImg.height;
+            }
+            tempCtx.translate(tempCanvas.width / 2, tempCanvas.height / 2);
+            tempCtx.rotate((currentRotation * Math.PI) / 180);
+            tempCtx.drawImage(tempImg, -tempImg.width / 2, -tempImg.height / 2);
+            const rotatedImageData = tempCanvas.toDataURL('image/jpeg', 0.9);
+            currentRotation = 0; photoPreview.style.transform = 'rotate(0deg)';
+            startShapeAnalysis(rotatedImageData);
+          };
+          tempImg.src = photoPreview.src;
+        } else {
+          startShapeAnalysis(photoPreview.src);
+        }
+      });
+      
+      // Listener para rádio buttons de unhas (mantido)
+      document.querySelectorAll('#nails-question-block label').forEach(label => label.addEventListener('click', function() { 
+          const input = this.querySelector('input[type="radio"]'); 
+          if(input) { 
+              document.querySelectorAll(`input[name="${input.name}"]`).forEach(r => r.parentElement.classList.remove('border-purple-500', 'bg-purple-100')); 
+              this.classList.add('border-purple-500', 'bg-purple-100'); 
+              input.checked = true; 
+          } 
+      }));
+
+
+      // Listeners para a seção legal (mantidos)
+      const openTermsLinks = document.querySelectorAll('#open-terms-splash, #open-terms-personalization');
+      openTermsLinks.forEach(link => {
+          link.addEventListener('click', (e) => {
+              e.preventDefault();
+              showBlock(legalDocumentsBlock);
+          });
+      });
+      if(backFromLegalButton) backFromLegalButton.addEventListener('click', () => {
+          // O fluxo legal não muda o activeBlockId, então ele volta para o último bloco normal.
+          const lastNormalBlock = document.getElementById(currentActiveBlockId);
+          if (lastNormalBlock) { showBlock(lastNormalBlock); } 
+          else { showBlock(personalizationBlock); }
+      });
+      
+      
+      const saveAnalysisButton = document.getElementById('save-analysis-button');
+      const shareAnalysisButton = document.getElementById('share-analysis-button'); // Novo botão
+      
+      async function generateAndSavePDF(actionType = 'save') {
+        const reportElement = document.getElementById('comparison-report-block');
+        const filename = `Analise_Relacional_${formatName(nameP1)}_e_${formatName(nameP2)}.pdf`;
+
+        // Determina qual botão desabilitar/mudar texto
+        const buttonToUpdate = actionType === 'share' ? shareAnalysisButton : saveAnalysisButton;
+        const originalText = buttonToUpdate.textContent;
+        buttonToUpdate.textContent = 'Gerando Arquivo...';
+        buttonToUpdate.disabled = true;
+        saveAnalysisButton.disabled = true; // Desabilita ambos durante a geração
+        shareAnalysisButton.disabled = true;
+
+        const originalParent = reportElement.parentNode;
+        const originalNextSibling = reportElement.nextSibling;
+        const originalStyle = reportElement.style.cssText;
+        const originalClassList = Array.from(reportElement.classList);
+        
+        reportElement.classList.remove('active-block', 'step-container', 'hiding');
+        Object.assign(reportElement.style, {
+            position: 'static', display: 'block', opacity: '1', transform: 'none', transition: 'none',
+            width: '100%', maxWidth: '100%', margin: '0', padding: '25px', boxShadow: 'none',
+            border: 'none', boxSizing: 'border-box'
+        });
+
+        document.body.appendChild(reportElement);
+        
+        const actionButtons = reportElement.querySelector('.action-buttons');
+        const originalActionButtonsDisplay = actionButtons ? actionButtons.style.display : null;
+        if (actionButtons) actionButtons.style.display = 'none';
+        
+        const originalAppMainDisplay = appMainContent.style.display;
+        appMainContent.style.display = 'none';
+        
+        let pdfBlob = null;
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            const opt = {
+              margin: [10, 10, 10, 10], filename: filename, image: { type: 'jpeg', quality: 0.95 },
+              html2canvas: { scale: 1.5, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: document.documentElement.scrollWidth },
+              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+              pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+            
+            const worker = html2pdf().from(reportElement).set(opt);
+            
+            if (actionType === 'save') {
+                await worker.save();
+            } else if (actionType === 'share') {
+                pdfBlob = await worker.output('blob');
+            }
+
+        } catch (err) {
+            console.error("Erro ao gerar PDF:", err);
+        } finally {
+            // Restaura o DOM
+            if (originalNextSibling) { originalParent.insertBefore(reportElement, originalNextSibling); } 
+            else if (originalParent) { originalParent.appendChild(reportElement); }
+
+            reportElement.style.cssText = originalStyle;
+            reportElement.className = ''; 
+            originalClassList.forEach(cls => reportElement.classList.add(cls)); 
+            
+            if (actionButtons) actionButtons.style.display = originalActionButtonsDisplay;
+            appMainContent.style.display = originalAppMainDisplay;
+
+            // Restaura os botões
+            saveAnalysisButton.textContent = 'Salvar Relatório em PDF';
+            shareAnalysisButton.textContent = 'Compartilhar Resultado';
+            saveAnalysisButton.disabled = false;
+            shareAnalysisButton.disabled = false;
+            
+            // Tenta o compartilhamento
+            if (actionType === 'share' && pdfBlob) {
+                if (navigator.share) {
+                    const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: `Análise de Match - ${name1} & ${name2}`,
+                            text: `Confira a análise de compatibilidade dos pés de ${name1} e ${name2}!`
+                        });
+                    } catch (error) {
+                        if (error.name !== 'AbortError') {
+                            console.error('Erro ao compartilhar:', error);
+                            // Usar console.log ou um modal customizado, não alert().
+                        }
+                    }
+                } else {
+                    // Usar console.log ou um modal customizado, não alert().
+                }
+            }
+        }
+      }
+
+      if(saveAnalysisButton) saveAnalysisButton.addEventListener('click', () => generateAndSavePDF('save'));
+      if(shareAnalysisButton) shareAnalysisButton.addEventListener('click', () => generateAndSavePDF('share'));
+      
+      // Chamada da função de setup na inicialização e ao mudar de tela
+      document.addEventListener('DOMContentLoaded', startNewAnalysis);
+      
+      // --- Adiciona Listeners para a navegação de Voltar (Global e Inline) ---
+      if(navBackButton) navBackButton.addEventListener('click', goBack);
+      
+      if(backShapeInstruction) backShapeInstruction.addEventListener('click', goBack);
+      if(backMeasurement) backMeasurement.addEventListener('click', goBack);
+      if(backShapeResult) backShapeResult.addEventListener('click', goBack);
+      if(backRatioInstruction) backRatioInstruction.addEventListener('click', goBack);
+      if(backRatioResult) backRatioResult.addEventListener('click', goBack);
+      if(backNailsQuestion) backNailsQuestion.addEventListener('click', goBack);
+      if(backFromReportButton) backFromReportButton.addEventListener('click', goBack);
+      
+      // --- CORREÇÃO: Listener para a tecla Enter ---
+      document.addEventListener('keydown', e => {
+        // Verifica se é a tecla Enter
+        if (e.key !== 'Enter') return;
+        
+        const activeElement = document.activeElement;
+        
+        // Exceção: Permite Enter em campos de texto de nome (para fins de usabilidade), mas previne o Enter global.
+        if (activeElement && activeElement.tagName === 'INPUT' && activeElement.type === 'text') {
+            return; 
+        }
+        
+        // Impede o Enter de submeter formulários ou realizar ações indesejadas no corpo do documento
+        e.preventDefault(); 
+        
+        const buttonMap = [
+            { b: splashScreen, i: 'start-button' },
+            { b: personalizationBlock, i: 'continue-to-upload' },
+            { b: previewBlock, i: 'use-photo-button' },
+            { b: shapeInstructionBlock, i: 'continue-to-shape-measurement' },
+            { b: shapeResultBlock, i: 'analyze-ratio-button' },
+            { b: ratioInstructionBlock, i: 'continue-to-ratio-measurement' },
+            // Permite calcular apenas se todos os pontos já foram clicados (condição 'c')
+            { b: measurementBlock, i: 'calculate-button', c: () => calculateButton && !calculateButton.classList.contains('hidden') },
+            { b: ratioResultBlock, i: 'new-ratio-analysis-button' },
+            { b: nailsQuestionBlock, i: 'continue-to-next-step' },
+            // NOVO: Volta para Nova Análise no relatório
+            { b: comparisonReportBlock, i: 'start-new-full-analysis-button' }
+        ];
+
+        // Encontra o bloco ativo
+        const entry = buttonMap.find(item => item.b && item.b.classList.contains('active-block'));
+        
+        if (entry && (!entry.c || entry.c())) { 
+            const btn = document.getElementById(entry.i); 
+            // Clica no botão se ele existir e não estiver desabilitado (ex: durante o loading)
+            if (btn && !btn.disabled) { 
+                btn.click();
+            }
+        }
+    });
+    });
+  </script>
+</body>
+</html>
