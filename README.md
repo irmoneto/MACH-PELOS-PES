@@ -1,41 +1,103 @@
-## LICENÇA DE USO DO APLICATIVO "ANALISADOR DE COMPATIBILIDADE PELOS PÉS"
+Analisador de Compatibilidade pelos Pés
 
-Copyright (c) 2025 Irmo Zuccato Neto. Todos os direitos reservados.
+Visão Geral
 
-Esta licença rege o uso do software "Analisador de Compatibilidade pelos Pés" (doravante "o Software").
+Este projeto é um aplicativo web interativo desenvolvido em HTML, CSS (utilizando Tailwind CSS [1]) e JavaScript puro. Ele permite aos usuários analisar a compatibilidade entre duas pessoas com base na morfologia de seus pés, seguindo uma metodologia específica de leitura de pés.
 
-### 1. Concessão de Licença
+O aplicativo guia o usuário através de um processo de upload de imagens dos pés, marcação de pontos específicos para análise de formato e tamanho dos dedos, e uma etapa final para classificação do tamanho das unhas. Ao final, um relatório de compatibilidade detalhado é gerado, incluindo uma pontuação e descrições sobre os pontos fortes e desafios da relação.
 
-É concedida ao usuário uma licença limitada, não exclusiva e intransferível para usar o Software para fins pessoais ou profissionais de análise (clientes), conforme a proposta original do Software.
+Funcionalidades Principais
 
-### 2. Restrições
+•
+Análise de Formato do Pé: Classificação do formato do pé (Egípcio, Grego/Romano, Quadrado) com base em marcações visuais.
 
-O usuário concorda em não:
+•
+Análise de Tamanho dos Dedos: Avaliação do tamanho relativo dos dedos (Curtos, Normais, Longos) através de medições na imagem.
 
-a. Reproduzir, copiar, modificar, adaptar, traduzir, realizar engenharia reversa, descompilar ou desmontar o Software ou qualquer parte dele.
-b. Distribuir, revender, sublicenciar, alugar, arrendar ou transferir o Software ou qualquer parte dele a terceiros.
-c. Utilizar o Software para fins comerciais (venda, publicação em massa de relatórios) sem autorização expressa por escrito de Irmo Zuccato Neto.
-d. Remover, alterar ou ocultar quaisquer avisos de direitos autorais ou outras notificações de propriedade do Software.
+•
+Análise de Tamanho das Unhas: Classificação do tamanho das unhas (Pouco Visíveis, Normais, Bem Visíveis) para inferir características de convicção.
 
-### 3. Propriedade Intelectual
+•
+Relatório de Compatibilidade: Geração de um relatório detalhado com base nas análises de ambos os indivíduos, incluindo uma pontuação de compatibilidade e insights relacionais.
 
-Todo o código, design, metodologia de análise e conteúdo textual (incluindo o Relatório Final) são de propriedade exclusiva de Irmo Zuccato Neto. A propriedade intelectual é protegida por leis de direitos autorais e tratados internacionais.
+•
+Exportação para PDF: Capacidade de exportar o relatório gerado para um arquivo PDF, utilizando a biblioteca html2pdf.js [2].
 
-### 4. Isenção de Garantias
+•
+Privacidade por Design: Todas as análises e processamento de imagens são realizados localmente no navegador do usuário. As imagens não são enviadas para servidores, garantindo a privacidade dos dados.
 
-O Software é fornecido "como está", sem garantia de qualquer tipo, expressa ou implícita, incluindo, mas não se limitando às garantias de comercialização, adequação a um fim específico e não violação. Em nenhum caso o autor ou detentor dos direitos autorais será responsável por quaisquer reclamações, danos ou outras responsabilidades, seja em uma ação de contrato, delito ou de outra forma, decorrentes de ou em conexão com o Software ou o uso ou outras negociações no Software.
+Tecnologias Utilizadas
 
-### 5. Limitação de Responsabilidade
+•
+HTML5: Estrutura e conteúdo da página.
 
-O desenvolvedor não se responsabiliza por quaisquer danos diretos, indiretos, incidentais, especiais, exemplares ou consequenciais (incluindo, mas não se limitando a, aquisição de bens ou serviços substitutos; perda de uso, dados ou lucros; ou interrupção de negócios) causados e em qualquer teoria de responsabilidade, seja em contrato, responsabilidade estrita ou delito (incluindo negligência ou de outra forma) decorrentes de qualquer forma do uso deste Software, mesmo que avisado da possibilidade de tais danos.
+•
+Tailwind CSS: Framework CSS para estilização rápida e responsiva.
 
-### 6. Lei Aplicável
+•
+JavaScript (Vanilla JS): Lógica de interação, manipulação de DOM, processamento de imagens e cálculos de análise.
 
-Esta Licença será regida e interpretada de acordo com as leis da República Federativa do Brasil.
+•
+html2pdf.js: Biblioteca JavaScript para geração de PDFs a partir de conteúdo HTML.
 
-Ao usar este Software, você concorda com os termos desta Licença.
+Como Usar
 
----
+Para utilizar o aplicativo, basta abrir o arquivo comparador-pes01.html em um navegador web moderno. O aplicativo irá guiá-lo através das seguintes etapas:
 
-**Autor da Licença:** @irmoneto - IRMO ZUCCATO NETO
-**Data:** 13 de Outubro de 2025
+1.
+Tela Inicial: Clique em "Começar Análise Dupla" para iniciar.
+
+2.
+Nomes: Insira os nomes das duas pessoas a serem analisadas.
+
+3.
+Upload de Imagens: Faça o upload de uma foto clara e de boa qualidade do pé de cada pessoa. A foto deve ser tirada de cima e de frente.
+
+4.
+Marcações: Siga as instruções para marcar pontos específicos nas imagens dos pés para a análise de formato e tamanho dos dedos.
+
+5.
+Classificação das Unhas: Responda a uma pergunta sobre a visibilidade das unhas.
+
+6.
+Relatório: Visualize o relatório de compatibilidade gerado e, opcionalmente, exporte-o para PDF.
+
+Política de Privacidade e Termos de Uso
+
+Conforme detalhado no próprio aplicativo, este projeto adere a uma rigorosa política de privacidade:
+
+•
+Coleta de Dados: Apenas os nomes são coletados para personalização do relatório e não são armazenados persistentemente.
+
+•
+Uso de Imagens: As imagens dos pés são processadas localmente no navegador do usuário e não são enviadas, armazenadas ou compartilhadas com o desenvolvedor ou terceiros. Elas são descartadas após a sessão.
+
+•
+Cookies e Rastreamento: O aplicativo não utiliza cookies de rastreamento de terceiros ou ferramentas de analytics que coletam dados pessoais.
+
+•
+Disclaimer Médico: O aplicativo não oferece diagnóstico médico, psicológico, quiroprático ou podológico. A análise é para fins de autoconhecimento e desenvolvimento pessoal.
+
+Para os termos completos, consulte a seção "Termos Legais" dentro do aplicativo.
+
+Aprimoramentos Futuros (Sugestões)
+
+Com base em uma análise detalhada, algumas sugestões para aprimoramento incluem:
+
+•
+Experiência do Usuário (UX): Melhorar o feedback visual durante as marcações, validação de inputs mais robusta, e um indicador de progresso claro.
+
+•
+Performance: Otimização de imagens de exemplo e revisão do carregamento assíncrono de scripts.
+
+•
+Acessibilidade (A11y): Melhoria do contraste de cores, garantia de navegação por teclado e revisão de textos alternativos para imagens.
+
+•
+Manutenibilidade: Modularização do código JavaScript e uso de constantes para strings.
+
+•
+Novas Funcionalidades: Adição de um modo de análise individual, armazenamento local de relatórios e opções de compartilhamento direto.
+
+Créditos
+Desenvolvido por Irmo Zuccato Neto.
