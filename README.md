@@ -1,2 +1,41 @@
-# MACH-PELOS-P-S
-APLICATIVO QUE COMPARA OS PÉS E APONTA OS PONTOS FORTES E FRACOS DA RELAÇÃO ENTRE ELES.
+## LICENÇA DE USO DO APLICATIVO "ANALISADOR DE COMPATIBILIDADE PELOS PÉS"
+
+Copyright (c) 2025 Irmo Zuccato Neto. Todos os direitos reservados.
+
+Esta licença rege o uso do software "Analisador de Compatibilidade pelos Pés" (doravante "o Software").
+
+### 1. Concessão de Licença
+
+É concedida ao usuário uma licença limitada, não exclusiva e intransferível para usar o Software para fins pessoais ou profissionais de análise (clientes), conforme a proposta original do Software.
+
+### 2. Restrições
+
+O usuário concorda em não:
+
+a. Reproduzir, copiar, modificar, adaptar, traduzir, realizar engenharia reversa, descompilar ou desmontar o Software ou qualquer parte dele.
+b. Distribuir, revender, sublicenciar, alugar, arrendar ou transferir o Software ou qualquer parte dele a terceiros.
+c. Utilizar o Software para fins comerciais (venda, publicação em massa de relatórios) sem autorização expressa por escrito de Irmo Zuccato Neto.
+d. Remover, alterar ou ocultar quaisquer avisos de direitos autorais ou outras notificações de propriedade do Software.
+
+### 3. Propriedade Intelectual
+
+Todo o código, design, metodologia de análise e conteúdo textual (incluindo o Relatório Final) são de propriedade exclusiva de Irmo Zuccato Neto. A propriedade intelectual é protegida por leis de direitos autorais e tratados internacionais.
+
+### 4. Isenção de Garantias
+
+O Software é fornecido "como está", sem garantia de qualquer tipo, expressa ou implícita, incluindo, mas não se limitando às garantias de comercialização, adequação a um fim específico e não violação. Em nenhum caso o autor ou detentor dos direitos autorais será responsável por quaisquer reclamações, danos ou outras responsabilidades, seja em uma ação de contrato, delito ou de outra forma, decorrentes de ou em conexão com o Software ou o uso ou outras negociações no Software.
+
+### 5. Limitação de Responsabilidade
+
+O desenvolvedor não se responsabiliza por quaisquer danos diretos, indiretos, incidentais, especiais, exemplares ou consequenciais (incluindo, mas não se limitando a, aquisição de bens ou serviços substitutos; perda de uso, dados ou lucros; ou interrupção de negócios) causados e em qualquer teoria de responsabilidade, seja em contrato, responsabilidade estrita ou delito (incluindo negligência ou de outra forma) decorrentes de qualquer forma do uso deste Software, mesmo que avisado da possibilidade de tais danos.
+
+### 6. Lei Aplicável
+
+Esta Licença será regida e interpretada de acordo com as leis da República Federativa do Brasil.
+
+Ao usar este Software, você concorda com os termos desta Licença.
+
+---
+
+**Autor da Licença:** @irmoneto - IRMO ZUCCATO NETO
+**Data:** 13 de Outubro de 2025
