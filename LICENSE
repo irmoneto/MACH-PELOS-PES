@@ -1,41 +1,42 @@
-## LICENÇA DE USO DO APLICATIVO "ANALISADOR DE COMPATIBILIDADE PELOS PÉS"
+LICENÇA DE USO E DISTRIBUIÇÃO — MACH-PELOS-PÉS
 
-Copyright (c) 2025 Irmo Zuccato Neto. Todos os direitos reservados.
+Copyright (c) 2025 Irmo Zuccato Neto
 
-Esta licença rege o uso do software "Analisador de Compatibilidade pelos Pés" (doravante "o Software").
+Pelo presente instrumento, concede-se permissão gratuita a qualquer pessoa que obtenha uma cópia deste software e dos arquivos de documentação associados (“Software”), para utilizar o Software sem restrições, incluindo, sem limitação, os direitos de usar, copiar, modificar, fundir, publicar, distribuir, sublicenciar e/ou vender (conforme cláusulas abaixo), sujeitando-se, entretanto, às seguintes condições:
 
-### 1. Concessão de Licença
+1. Atribuição de autoria
 
-É concedida ao usuário uma licença limitada, não exclusiva e intransferível para usar o Software para fins pessoais ou profissionais de análise (clientes), conforme a proposta original do Software.
+A notificação de direitos autorais e esta permissão deverão ser incluídas em todas as cópias ou partes substanciais do Software.
+Em qualquer trabalho derivado, deve-se indicar que se baseia neste Software, por meio de texto como:
 
-### 2. Restrições
+“Baseado no software desenvolvido por Irmo Zuccato Neto (MACH-PELOS-PÉS).”
 
-O usuário concorda em não:
+A atribuição pode aparecer no rodapé, nos créditos, em documentação ou outra parte visível, desde que de boa fé e de forma razoável.
 
-a. Reproduzir, copiar, modificar, adaptar, traduzir, realizar engenharia reversa, descompilar ou desmontar o Software ou qualquer parte dele.
-b. Distribuir, revender, sublicenciar, alugar, arrendar ou transferir o Software ou qualquer parte dele a terceiros.
-c. Utilizar o Software para fins comerciais (venda, publicação em massa de relatórios) sem autorização expressa por escrito de Irmo Zuccato Neto.
-d. Remover, alterar ou ocultar quaisquer avisos de direitos autorais ou outras notificações de propriedade do Software.
+2. Uso permitido e limitações
 
-### 3. Propriedade Intelectual
+O Software pode ser utilizado para fins pessoais, educacionais, científicos ou comerciais indiretos, incluindo uso em sites ou apps com monetização via Google AdSense ou exibição de anúncios, desde que obedecidas estas restrições:
 
-Todo o código, design, metodologia de análise e conteúdo textual (incluindo o Relatório Final) são de propriedade exclusiva de Irmo Zuccato Neto. A propriedade intelectual é protegida por leis de direitos autorais e tratados internacionais.
+O Software não poderá ser vendido ou redistribuído como produto comercial isolado (ou parte de outro produto de venda) sem autorização expressa e por escrito do autor;
 
-### 4. Isenção de Garantias
+O uso comercial direto (ex: venda do Software, licenciamento pago, oferta do Software como serviço pago) exige autorização prévia do autor.
 
-O Software é fornecido "como está", sem garantia de qualquer tipo, expressa ou implícita, incluindo, mas não se limitando às garantias de comercialização, adequação a um fim específico e não violação. Em nenhum caso o autor ou detentor dos direitos autorais será responsável por quaisquer reclamações, danos ou outras responsabilidades, seja em uma ação de contrato, delito ou de outra forma, decorrentes de ou em conexão com o Software ou o uso ou outras negociações no Software.
+Ou seja: Monetizar com anúncios no site/app onde o software roda é permitido, desde que você não esteja vendendo o Software em si como produto.
 
-### 5. Limitação de Responsabilidade
+3. Proibição de endosso
 
-O desenvolvedor não se responsabiliza por quaisquer danos diretos, indiretos, incidentais, especiais, exemplares ou consequenciais (incluindo, mas não se limitando a, aquisição de bens ou serviços substitutos; perda de uso, dados ou lucros; ou interrupção de negócios) causados e em qualquer teoria de responsabilidade, seja em contrato, responsabilidade estrita ou delito (incluindo negligência ou de outra forma) decorrentes de qualquer forma do uso deste Software, mesmo que avisado da possibilidade de tais danos.
+Não é permitido usar o nome, imagem, marca ou identidade do autor para promover produtos, serviços ou versões modificadas do Software sem prévia autorização por escrito.
 
-### 6. Lei Aplicável
+4. Conformidade com políticas de terceiros
 
-Esta Licença será regida e interpretada de acordo com as leis da República Federativa do Brasil.
+O usuário do Software deve assegurar que sua utilização dele e o conteúdo que produzir esteja em conformidade com todas as leis aplicáveis e políticas de plataformas de terceiros — em especial, as Políticas do Google AdSense (ver: https://support.google.com/adsense/answer/48182
 
-Ao usar este Software, você concorda com os termos desta Licença.
+5. Ausência de garantias
 
----
+O SOFTWARE É FORNECIDO “NO ESTADO EM QUE SE ENCONTRA”, SEM NENHUMA GARANTIA, seja expressa ou implícita, inclusive, mas não se limitando às garantias de comercialização, adequação a propósito específico e não violação de direitos de terceiros.
+Em nenhuma hipótese o autor será responsável por quaisquer danos (diretos, indiretos, incidentais, especiais ou consequenciais) decorrentes do uso ou da incapacidade de usar o Software.
 
-**Autor da Licença:** @IRMONETO - IRMO ZUCCATO NETO
-**Data:** 13 de Outubro de 2025
+6. Legislação aplicável e foro
+
+Esta licença será regida pelas leis da República Federativa do Brasil.
+Fica eleito o foro da Comarca de Campinas/SP para resolver quaisquer disputas relativas a esta licença, renunciando-se a qualquer outro foro, por mais privilegiado que seja.
