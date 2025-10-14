@@ -116,65 +116,12 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
-    
-    /* NOVO: Estilo para a barra de navegação inferior (Mobile) */
-    #app-navigation-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #ffffff;
-        border-top: 1px solid #e5e7eb;
-        box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
-        z-index: 50;
-        padding: 1rem;
-        transform: translateY(100%);
-        transition: transform 0.3s ease-in-out;
-    }
-
-    #app-navigation-bar.show {
-        transform: translateY(0);
-    }
-    
-    /* Para os botões Voltar/Avançar inline, garantindo que não quebrem o layout */
-    .navigation-container {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-    /* Estilo padronizado e maior para os botões de navegação */
-    .navigation-container .action-button {
-        flex: 1 1 45%; /* Permite que os botões cresçam até 45% e fiquem lado a lado */
-        max-width: 250px; /* Aumentei o max-width para dar mais destaque */
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-        font-size: 1.125rem; /* text-lg */
-        font-weight: 700; /* font-bold */
-        border-radius: 0.75rem; /* rounded-xl */
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* shadow-lg */
-        transition: all 0.2s;
-    }
-    .navigation-container .action-button:hover {
-        transform: scale(1.02);
-    }
-    
-    /* Estilos para ocultar o botão de voltar inline quando a barra de navegação móvel está ativa */
-    @media (max-width: 640px) {
-        .navigation-container {
-            /* No mobile, usamos a barra de navegação inferior, escondemos o container inline */
-            display: none;
-        }
-        /* Os botões de voltar no topo do bloco são para tablets/desktop */
-        [id^="back-"] {
-            display: none !important;
-        }
-    }
   </style>
 </head>
 <body class="bg-animation min-h-screen p-4 sm:p-8 text-gray-800 flex items-center justify-center">
 
-  <div id="app-main-content" class="max-w-4xl w-full mx-auto block-transition mb-20 sm:mb-0"> <!-- Aumentado margin bottom para nav bar em mobile -->
+  <!-- Ajuste de margin bottom, não precisamos mais do mb-20 -->
+  <div id="app-main-content" class="max-w-4xl w-full mx-auto block-transition mb-8 sm:mb-8">
     <!-- Título/Header -->
     <div id="app-header-container">
         <header class="text-center mb-6 sm:mb-10">
@@ -259,35 +206,33 @@
                 <button id="rotate-left-button" class="bg-blue-500 text-white py-3 px-6 rounded-full font-bold shadow-lg hover:bg-blue-600 transition-colors">🔄 Girar para a Esquerda</button>
                 <button id="rotate-right-button" class="bg-blue-500 text-white py-3 px-6 rounded-full font-bold shadow-lg hover:bg-blue-600 transition-colors">🔄 Girar para a Direita</button>
             </div>
-            <div class="flex justify-center gap-4">
-                <!-- Botão Tirar Outra / Mudar Foto -->
-                <button id="retake-photo-button" class="bg-gray-500 text-white py-3 px-6 rounded-full font-bold shadow-lg hover:bg-gray-600 transition-colors" onclick="showBlock(uploadBlock)">Tirar Outra / Mudar Foto</button>
-                <button id="use-photo-button" class="bg-teal-500 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-teal-600 transition-colors">Usar Foto</button>
+            <div class="flex justify-center gap-4 mt-6 w-full max-w-sm mx-auto">
+                <button id="retake-photo-button" class="flex-1 bg-gray-500 text-white py-3 px-6 rounded-full font-bold shadow-lg hover:bg-gray-600 transition-colors">Tirar Outra</button>
+                <button id="use-photo-button" class="flex-1 bg-teal-500 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-teal-600 transition-colors">Usar Foto</button>
             </div>
         </div>
     </div>
 
     <!-- Tela de Instruções (Formato e Tamanho) -->
     <div id="shape-instruction-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-dashed border-blue-300 text-center transition-all duration-300 step-container">
-        <!-- Removido botão back inline no topo -->
+        <!-- REMOVIDO: Botão Voltar do Topo -->
         <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-800">Análise do Formato do Pé de <span id="shape-target-name" class="text-blue-600"></span></h2>
         <p class="text-gray-600 mb-6">Observe a imagem abaixo para entender onde as marcações das pontas dos dedos devem ser feitas.</p>
         <img src="https://raw.githubusercontent.com/irmoneto/Analisador-Personalidade-Pelos-P-s/main/IMAGENS%20APP/EXEMPLO%20F%20P%C3%89S.PNG" alt="Exemplo de marcação para formato do pé" class="mx-auto rounded-lg shadow-md mb-8 w-full max-w-md h-auto border-2 border-gray-200">
         
-        <!-- NOVO: Container de botões Voltar/Continuar -->
-        <div class="navigation-container">
-            <!-- Botão Voltar CENTRALIZADO -->
-            <button id="back-shape-instruction" class="action-button bg-gray-500 text-white hover:bg-gray-600 cursor-pointer transition-transform duration-200 transform flex items-center justify-center">
+        <!-- NOVO RODAPÉ DE NAVEGAÇÃO -->
+        <div class="flex justify-between items-center mt-8 pt-4 border-t border-gray-100">
+            <button id="back-shape-instruction" class="flex items-center text-gray-600 font-semibold py-3 px-6 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Voltar
             </button>
-            <button id="continue-to-shape-measurement" class="action-button bg-blue-600 text-white hover:bg-blue-700 cursor-pointer transition-transform duration-200 transform">
-                Continuar
+            <button id="continue-to-shape-measurement" class="bg-blue-600 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-blue-700 cursor-pointer transition-transform duration-200 transform hover:scale-105">
+              Continuar
             </button>
         </div>
     </div>
-    
     <div id="ratio-instruction-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-dashed border-yellow-300 text-center transition-all duration-300 step-container">
-        <!-- Removido botão back inline no topo -->
+        <!-- REMOVIDO: Botão Voltar do Topo -->
         <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-gray-800">Análise do Tamanho dos Dedos de <span id="ratio-target-name" class="text-blue-600"></span></h2>
         <p class="text-gray-600 mb-4">Você precisará fazer TRÊS marcações na imagem do pé:</p>
         <div class="text-left bg-yellow-50 p-4 rounded-lg mb-6 border-l-4 border-yellow-400">
@@ -299,21 +244,21 @@
         </div>
         <img src="https://raw.githubusercontent.com/irmoneto/Analisador-Personalidade-Pelos-P-s/main/IMAGENS%20APP/EXEMPLO%20T%20DEDOS.jpeg" alt="Exemplo de marcação para tamanho dos dedos" class="mx-auto rounded-lg shadow-md mb-8 w-full max-w-md h-auto border-2 border-gray-200">
         
-        <!-- NOVO: Container de botões Voltar/Continuar -->
-        <div class="navigation-container">
-            <!-- Botão Voltar CENTRALIZADO -->
-            <button id="back-ratio-instruction" class="action-button bg-gray-500 text-white hover:bg-gray-600 cursor-pointer transition-transform duration-200 transform flex items-center justify-center">
+        <!-- NOVO RODAPÉ DE NAVEGAÇÃO -->
+        <div class="flex justify-between items-center mt-8 pt-4 border-t border-gray-100">
+            <button id="back-ratio-instruction" class="flex items-center text-gray-600 font-semibold py-3 px-6 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Voltar
             </button>
-            <button id="continue-to-ratio-measurement" class="action-button bg-red-700 text-white hover:bg-red-800 transition-transform duration-200 transform">
-                Entendi, Continuar
+            <button id="continue-to-ratio-measurement" class="bg-red-700 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-red-800 transition-transform duration-200 transform hover:scale-105">
+              Entendi, Continuar
             </button>
         </div>
     </div>
 
     <!-- Medição (Comum para ambas as fases) -->
     <div id="measurement-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg transition-all duration-300 step-container">
-      
+      <!-- REMOVIDO: Botão Voltar do Topo -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
         <h2 class="text-xl font-semibold text-gray-800 mb-2 sm:mb-0">Marque os Pontos para <span id="measurement-target-name" class="text-blue-600"></span></h2>
         <button id="redo-button" class="flex items-center gap-2 bg-gray-200 text-gray-700 py-2 px-4 rounded-full font-medium hover:bg-gray-300 transition-colors text-sm">
@@ -327,13 +272,13 @@
       </div>
       <div id="progress-container" class="mt-4 grid grid-cols-4 gap-2"></div>
       
-      <!-- NOVO: Container de botões Voltar/Calcular -->
-      <div class="navigation-container">
-          <!-- Botão Voltar CENTRALIZADO -->
-          <button id="back-measurement" class="action-button bg-gray-500 text-white hover:bg-gray-600 transition-colors flex items-center justify-center">
+      <!-- NOVO RODAPÉ DE NAVEGAÇÃO -->
+      <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+          <button id="back-measurement" class="flex items-center text-gray-600 font-semibold py-3 px-6 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+              <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
               Voltar
           </button>
-          <button id="calculate-button" class="action-button bg-blue-500 text-white hover:bg-blue-600 transition-colors hidden">
+          <button id="calculate-button" class="bg-blue-500 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-blue-600 transition-colors hidden">
               Calcular
           </button>
       </div>
@@ -341,7 +286,7 @@
     
     <!-- Resultado Formato -->
     <div id="shape-result-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-blue-300 transition-all duration-300 result-container">
-        
+        <!-- REMOVIDO: Botão Voltar do Topo -->
         <h2 class="text-xl sm:text-2xl font-bold mb-4 text-center">Resultado do Formato do Pé de <span id="shape-result-target-name" class="text-blue-600"></span></h2>
       <div class="flex flex-col sm:flex-row gap-8">
           <!-- Conteúdo do resultado de formato -->
@@ -352,24 +297,23 @@
             <div class="text-5xl font-extrabold mb-4" id="shape-emoji"></div>
             <div class="text-xl font-semibold mb-6" id="shape-text"></div>
             <p id="classification-reasoning" class="text-sm text-gray-600 mt-2"></p>
-            
-            <!-- Botão de ação (analisar razão) agora em container de navegação -->
-            <div class="navigation-container mt-8">
-                <!-- Botão Voltar CENTRALIZADO -->
-                <button id="back-shape-result" class="action-button bg-gray-500 text-white hover:bg-gray-600 transition-colors flex items-center justify-center">
-                    Voltar
-                </button>
-                <button id="analyze-ratio-button" class="action-button bg-red-700 text-white hover:bg-red-800 transition-colors">
-                    Analisar Tamanho dos Dedos
-                </button>
-            </div>
         </div>
+      </div>
+      <!-- NOVO RODAPÉ DE NAVEGAÇÃO -->
+      <div class="flex justify-between items-center mt-8 pt-4 border-t border-gray-200">
+          <button id="back-shape-result" class="flex items-center text-gray-600 font-semibold py-3 px-6 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+              <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+              Voltar
+          </button>
+          <button id="analyze-ratio-button" class="bg-red-700 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-red-800 transition-colors transform hover:scale-105">
+              Analisar Tamanho dos Dedos
+          </button>
       </div>
     </div>
 
     <!-- Bloco de Resultado da Análise do Tamanho dos Dedos -->
     <div id="ratio-result-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-yellow-300 transition-all duration-300 result-container">
-        
+        <!-- REMOVIDO: Botão Voltar do Topo -->
         <h2 class="text-xl sm:text-2xl font-bold mb-4 text-center">Resultado da Análise do Tamanho dos Dedos de <span id="ratio-result-target-name" class="text-blue-600"></span></h2>
       <div class="flex flex-col sm:flex-row gap-8">
         <div class="flex-1">
@@ -389,22 +333,21 @@
           </div>
         </div>
       </div>
-      
-      <!-- NOVO: Container de botões Voltar/Continuar -->
-      <div class="navigation-container mt-4">
-        <!-- Botão Voltar CENTRALIZADO -->
-        <button id="back-ratio-result" class="action-button bg-gray-500 text-white hover:bg-gray-600 transition-colors flex items-center justify-center">
-            Voltar
-        </button>
-        <button id="new-ratio-analysis-button" class="action-button bg-red-600 text-white hover:bg-red-700 transition-colors">
-            Análise das Unhas
-        </button>
+      <!-- NOVO RODAPÉ DE NAVEGAÇÃO -->
+      <div class="flex justify-between items-center mt-8 pt-4 border-t border-gray-200">
+          <button id="back-ratio-result" class="flex items-center text-gray-600 font-semibold py-3 px-6 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+              <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+              Voltar
+          </button>
+          <button id="new-ratio-analysis-button" class="bg-red-600 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-red-700 transition-colors transform hover:scale-105">
+              Análise das Unhas
+          </button>
       </div>
     </div>
     
     <!-- Pergunta sobre Unhas (Adaptação para Pessoa 1 ou 2) -->
     <div id="nails-question-block" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-orange-300 transition-all duration-300 step-container">
-        
+        <!-- REMOVIDO: Botão Voltar do Topo -->
         <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-6 text-center">Análise das Unhas dos Pés de <span id="nails-target-name" class="text-blue-600"></span></h2>
         
         <div class="flex flex-col sm:flex-row gap-8 items-center mb-8">
@@ -434,27 +377,25 @@
             </div>
             
             <p id="nails-error" class="text-red-500 text-sm mt-4 hidden">Por favor, selecione uma opção para prosseguir.</p>
-            
-            <!-- NOVO: Container de botões Voltar/Continuar -->
-            <div class="navigation-container">
-                <!-- Botão Voltar CENTRALIZADO -->
-                <button id="back-nails-question" class="action-button bg-gray-500 text-white hover:bg-gray-600 transition-colors flex items-center justify-center">
-                    Voltar
-                </button>
-                <button id="continue-to-next-step" class="action-button bg-purple-600 text-white hover:bg-purple-700 transition-colors inline-flex items-center justify-center">
-                    <span id="button-text-next">
-                        Prosseguir para a Análise da Pessoa 2
-                    </span>
-                    <span id="button-text-generate" class="hidden">
-                        Gerar Relatório de Compatibilidade
-                    </span>
-                    <span id="loading-spinner" class="hidden loading-spinner ml-2"></span>
-                </button>
-            </div>
+        </div>
+        
+        <!-- NOVO RODAPÉ DE NAVEGAÇÃO -->
+        <div class="flex justify-between items-center mt-8 pt-4 border-t border-gray-200">
+            <button id="back-nails-question" class="flex items-center text-gray-600 font-semibold py-3 px-6 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Voltar
+            </button>
+            <button id="continue-to-next-step" class="bg-purple-600 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-purple-700 transition-colors inline-flex items-center justify-center">
+                <span id="button-text-next">
+                    Prosseguir para a Análise da Pessoa 2
+                </span>
+                <span id="button-text-generate" class="hidden">
+                    Gerar Relatório de Compatibilidade
+                </span>
+                <span id="loading-spinner" class="hidden loading-spinner ml-2"></span>
+            </button>
         </div>
     </div>
-    
-    <!-- REMOVIDO: Questionário Pessoal Otimizado (Perguntas Complementares) -->
     
     <!-- Relatório Completo de Análise (AGORA RELATÓRIO DE COMPATIBILIDADE) -->
     <div id="comparison-report-block" class="bg-white p-8 sm:p-12 rounded-xl shadow-lg border-2 border-green-300 transition-all duration-300 step-container">
@@ -609,18 +550,7 @@
 
   <div id="copy-notification">Relatório copiado para a área de transferência!</div>
     
-  <!-- NOVO: Barra de Navegação Flutuante para Mobile (Visível apenas em telas pequenas) -->
-  <div id="app-navigation-bar" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-xl p-4 transition-transform duration-300 transform translate-y-full flex justify-between items-center z-50 sm:hidden">
-    <button id="nav-back-button" class="flex items-center text-gray-600 font-semibold py-2 px-4 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full mr-2">
-      <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-      Voltar
-    </button>
-    <!-- Botão de avançar oculto, pois o fluxo principal exige o clique nos botões de conteúdo -->
-    <button id="nav-next-button" class="flex items-center justify-center text-blue-600 font-semibold py-2 px-4 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full ml-2 hidden">
-      Avançar
-      <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-    </button>
-  </div>
+  <!-- REMOVIDO: Barra de Navegação Flutuante para Mobile, pois a navegação agora é interna nos blocos. -->
 
 
   <script>
@@ -634,7 +564,7 @@
             "Egípcio X Quadrado": { fortes: 'O Quadrado traz a visão utópica e integradora, e o Egípcio traz a praticidade e o passo a passo (o "como"). O Egípcio ajuda a concretizar o ideal do Quadrado, focando a energia dispersa.', fracos: 'O Egípcio se frustra com a dispersão e o idealismo do Quadrado. O Quadrado se sente limitado ou podado pela rigidez e objetividade excessiva do Egípcio. Comunicação pode falhar entre o "sonho" e a "realidade".', analise_curta: 'Aqui a visão utópica (Quadrado) encontra a execução objetiva (Egípcio). O Egípcio dá estrutura ao idealismo do Quadrado, mas precisa ter paciência com a dispersão. Match com potencial de concretização de grandes ideias, se houver tolerância à diferença de ritmo mental.' },
             "Grego/Romano X Grego/Romano": { fortes: 'Parceria baseada na visão de mundo e na estratégia. Entendimento mútuo da necessidade de análise, detalhismo e planejamento. Criam sistemas complexos e bem estruturados juntos.', fracos: 'Risco de paralisia por análise. Demoram muito para iniciar a ação. Podem se perder em detalhes e teorias, dificultando a simplicidade e a execução prática.', analise_curta: 'Aqui temos um encontro de mentes estratégicas. Ambos gostam de planejar, entender e analisar tudo antes de agir, por isso é mais fácil o papo fluir, as ideias se encaixam... mas quanto a agir, isso é diferente. Match mental forte, mas cuidado com o excesso de “vamos pensar sobre isso”.' },
             "Grego/Romano X Quadrado": { fortes: 'Compartilham a visão ampla e a aversão à simplicidade. O G/R estrutura a utopia do Quadrado em esquemas e planos viáveis. Grande potencial para inovação e soluções holísticas.', fracos: 'Ambos podem ser abstratos demais, com pouca conexão com a terra e a prática. O G/R pode tentar enquadrar o idealismo do Quadrado, gerando atrito. Risco de dispersão intelectual.', analise_curta: 'Ambos valorizam a visão ampla e a complexidade, criando um ambiente de alta inovação e estratégia. O desafio é sair do campo das ideias: o Grego/Romano deve liderar o planejamento para transformar a utopia do Quadrado em algo executável. Risco de viverem "na lua".' },
-            "Quadrado X Quadrado": { fortes: 'Relação de grande liberdade mental, aceitação de complexidade e forte idealismo. Apoio mútuo na busca por soluções integrais e éticas. Criam um ambiente de não julgamento e vasta abertura de ideias.', fracos: 'Extrema dispersão, falta de foco e objetividade. O idealismo pode levar à frustração com o mundo real. Dificuldade em tomar decisões práticas e concluir projetos.', analise_curta: 'Dupla de mentes libres e integradoras. Excelente para debater grandes conceitos e ideais, mas péssima para decisões do dia a dia. É um match de "mentes brilhantes" que precisam de alguém de fora para fazer a lista do supermercado. O desafio é aterrar as ideias utópicas.' }
+            "Quadrado X Quadrado": { fortes: 'Relação de grande liberdade mental, aceitação de complexidade e forte idealismo. Apoio mútuo na busca por soluções integrais e éticas. Criam um ambiente de não julgamento e vasta abertura de ideias.', fracos: 'Extrema dispersão, falta de foco e objetividade. O idealismo pode levar à frustração com o mundo real. Dificuldade em tomar decisões práticas e concluir projetos.', analise_curta: 'Dupla de mentes livres e integradoras. Excelente para debater grandes conceitos e ideais, mas péssima para decisões do dia a dia. É um match de "mentes brilhantes" que precisam de alguém de fora para fazer a lista do supermercado. O desafio é aterrar as ideias utópicas.' }
         },
         "Tamanho Dedos": {
             "Curtos X Curtos": { fortes: 'Dupla prática, objetiva e voltada à ação. Alta capacidade de execução e de resolver problemas de forma direta. Relação com pouca hesitação e foco em resultados imediatos.', fracos: 'Impaciência mútua e baixa tolerância à reflexão ou ao emocional. Podem ser rígidos e ter dificuldade em aceitar que o outro desacelere. Conflitos tendem a ser diretos e rápidos, mas pouco elaborados.', analise_curta: 'Ambos são fogo e movimento. Match de ação imediata e eficiência, mas com impaciência dobrada. Se um precisar de tempo para refletir, o outro estará na porta esperando. O desafio é aprender a respirar junto e dar espaço à emoção.' },
@@ -665,7 +595,7 @@
     
     // NOVO: Função para garantir ordenação consistente das chaves de relacionamento
     function sortRelationalKey(val1, val2) {
-        // Define uma ordem de prioridade para garantir que a chave gerada seja única (ex: 'A X B' ou 'B X A', mas nunca ambas)
+        // Define uma ordem de prioridade para garantir que a chave generada seja única (ex: 'A X B' ou 'B X A', mas nunca ambas)
         const order = ['Egípcio', 'Grego/Romano', 'Quadrado', 'Curtos', 'Normais', 'Longos', 'Pouco Visíveis', 'Bem Visíveis'];
         
         // Se as chaves são as mesmas, retorna a chave única
@@ -730,11 +660,7 @@
       const previewBlock = document.getElementById('preview-block');
       const legalDocumentsBlock = document.getElementById('legal-documents-block');
       
-      // NOVO: Barra de navegação inferior
-      const navBar = document.getElementById('app-navigation-bar');
-      const navBackButton = document.getElementById('nav-back-button');
-      const navNextButton = document.getElementById('nav-next-button');
-
+      // REMOVIDO: Referências à barra de navegação inferior
 
       // --- BOTÕES E FLUXO ---
       const startButton = document.getElementById('start-button');
@@ -762,7 +688,7 @@
       const continueToRatioMeasurement = document.getElementById('continue-to-ratio-measurement');
       const backFromLegalButton = document.getElementById('back-from-legal-button');
       
-      // NOVO: Botões de voltar dentro dos blocos (para desktop/scroll)
+      // NOVO: Botões de voltar dentro dos blocos (agora todos no rodapé)
       const backShapeInstruction = document.getElementById('back-shape-instruction');
       const backMeasurement = document.getElementById('back-measurement');
       const backShapeResult = document.getElementById('back-shape-result');
@@ -793,8 +719,7 @@
 
       // --- Elementos do Preview/Giro ---
       const photoPreview = document.getElementById('photo-preview');
-      // Alterado: Retake photo button agora só volta para o upload, a lógica de clique no JS não é mais necessária aqui, mas mantemos o listener para o clique (que chamaria goBack)
-      const retakePhotoButton = document.getElementById('retake-photo-button'); 
+      const retakePhotoButton = document.getElementById('retake-photo-button');
       const usePhotoButton = document.getElementById('use-photo-button');
       const rotateLeftButton = document.getElementById('rotate-left-button');
       const rotateRightButton = document.getElementById('rotate-right-button');
@@ -858,32 +783,8 @@
           }
       }
       
-      function setupNavigationButtons(blockId) {
-        const backButtons = document.querySelectorAll('[id^="back-"]');
-        backButtons.forEach(btn => {
-            // Controla a visibilidade dos botões inline (desktop/tablet)
-            const parentBlock = btn.closest('.step-container');
-            // Remove o display flex/block dos botões inline para o mobile navigation bar assumir o controle
-            if (parentBlock && parentBlock.id === blockId && !isMobileDevice()) {
-                btn.style.display = 'flex';
-            } else if (btn) {
-                btn.style.display = 'none';
-            }
-        });
-
-        // Define quais blocos ativam a barra de navegação móvel (a partir da instrução de formato)
-        const flowBlocks = [shapeInstructionBlock.id, measurementBlock.id, shapeResultBlock.id, ratioInstructionBlock.id, ratioResultBlock.id, nailsQuestionBlock.id, comparisonReportBlock.id];
-        const showNav = isMobileDevice() && flowBlocks.includes(blockId);
-
-        navBar.classList.toggle('show', showNav);
-        navNextButton.classList.add('hidden'); // Manter o next button oculto
-        
-        // Desabilita o botão 'Voltar' no relatório, pois o fluxo principal é o botão "Voltar à Análise P2"
-        const disableBack = [comparisonReportBlock.id].includes(blockId);
-        navBackButton.disabled = disableBack;
-      }
-
-
+      // REMOVIDO: Função setupNavigationButtons, pois a navegação é interna
+      
       function showBlock(blockToShow) {
         const allBlocks = [splashScreen, personalizationBlock, uploadBlock, shapeInstructionBlock, ratioInstructionBlock, measurementBlock, shapeResultBlock, ratioResultBlock, nailsQuestionBlock, comparisonReportBlock, previewBlock, legalDocumentsBlock];
         
@@ -910,7 +811,6 @@
           if (blockToShow) blockToShow.classList.add('active-block');
           
           currentActiveBlockId = targetId; // Atualiza o ID do bloco ativo
-          setupNavigationButtons(currentActiveBlockId); // Configura o nav bar
           
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 300);
@@ -970,8 +870,12 @@
         const labels = currentAnalysisPhase === 'shape' ? shapeStepLabels : ratioStepLabels;
         const buttonText = currentAnalysisPhase === 'shape' ? 'Calcular Formato' : 'Calcular Análise do Tamanho dos Dedos';
         document.getElementById('instruction').textContent = currentStep <= labels.length ? `Clique para marcar o ponto ${currentStep}: ${labels[currentStep - 1]}` : `Marcações concluídas. Clique em "${buttonText}".`;
-        calculateButton.classList.toggle('hidden', currentStep <= labels.length);
-        calculateButton.textContent = buttonText;
+        
+        // Ajusta a visibilidade do botão de Calcular (Rodapé à direita)
+        const calculateButtonElement = document.getElementById('calculate-button');
+        calculateButtonElement.classList.toggle('hidden', currentStep <= labels.length);
+        calculateButtonElement.textContent = buttonText;
+        
         canvas.classList.toggle('custom-cursor', currentStep <= labels.length);
         const progressContainer = document.getElementById('progress-container');
         progressContainer.innerHTML = '';
@@ -983,15 +887,36 @@
         });
       }
 
-      // Função de Desenho no Canvas (mantida)
+      // Função de Desenho no Canvas (CORRIGIDA)
       function drawCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
         if (currentAnalysisPhase === 'shape') {
           const refY = canvas.height / 2;
           ctx.beginPath(); ctx.moveTo(0, refY); ctx.lineTo(canvas.width, refY);
           Object.assign(ctx, { strokeStyle: 'rgba(239, 68, 68, 0.1)', lineWidth: 3 }).setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
+        } 
+        
+        if (currentAnalysisPhase === 'ratio' && points.length >= 2) {
+            // Desenha a linha Ponta do 2º dedo (P1) até Base do 2º dedo (P2)
+            ctx.beginPath(); 
+            ctx.moveTo(points[0].x, points[0].y); 
+            ctx.lineTo(points[1].x, points[1].y);
+            Object.assign(ctx, { strokeStyle: '#ef4444', lineWidth: 3 }).stroke();
+
+            // CORREÇÃO: Só desenha a segunda linha se o terceiro ponto já existir
+            if (points.length >= 3) {
+              // Desenha a linha Base do 2º dedo (P2) até Fim do Peito do Pé (P3)
+              ctx.beginPath(); 
+              ctx.moveTo(points[1].x, points[1].y); 
+              ctx.lineTo(points[2].x, points[2].y);
+              Object.assign(ctx, { strokeStyle: '#3b82f6', lineWidth: 3 }).setLineDash([5, 5]); 
+              ctx.stroke(); 
+              ctx.setLineDash([]);
+            }
         }
+        
         points.forEach((point, index) => {
           if (currentAnalysisPhase === 'shape') {
             const refY = canvas.height / 2;
@@ -1003,14 +928,8 @@
             }
             const lengthValue = Math.abs(point.y - refY).toFixed(0);
             Object.assign(ctx, { fillStyle: '#ff0000', font: 'bold 12px Arial' }).fillText(`${lengthValue}px`, point.x + 10, (point.y + refY) / 2);
-          } else if (currentAnalysisPhase === 'ratio' && points.length >= 2) {
-            ctx.beginPath(); ctx.moveTo(points[0].x, points[0].y); ctx.lineTo(points[1].x, points[1].y);
-            Object.assign(ctx, { strokeStyle: '#ef4444', lineWidth: 3 }).stroke();
-            if (points.length >= 3) {
-              ctx.beginPath(); ctx.moveTo(points[1].x, points[1].y); ctx.lineTo(points[2].x, points[2].y);
-              Object.assign(ctx, { strokeStyle: '#3b82f6' }).setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
-            }
-          }
+          } 
+          
           ctx.beginPath(); ctx.arc(point.x, point.y, 8, 0, 2 * Math.PI);
           Object.assign(ctx, { fillStyle: currentAnalysisPhase === 'ratio' ? (index < 2 ? '#ef4444' : '#3b82f6') : '#ff0000' }).fill();
           Object.assign(ctx, { strokeStyle: '#ffffff', lineWidth: 2 }).stroke();
@@ -1340,15 +1259,8 @@
                 if (buttonTextGenerate) buttonTextGenerate.classList.remove('hidden');
                 showBlock(nailsQuestionBlock);
                 break;
-            case legalDocumentsBlock.id:
-                // Do bloco legal, volta para o último bloco normal
-                // (Implementado no listener backFromLegalButton, mas adicionado aqui por segurança)
-                const lastNormalBlock = document.getElementById(currentActiveBlockId);
-                if (lastNormalBlock) { showBlock(lastNormalBlock); } 
-                else { showBlock(personalizationBlock); }
-                break;
             default:
-                // Para splash/personalization (que são o início do fluxo)
+                // Para splash/personalization/legal (que não têm botão de voltar no flow)
                 console.warn(`Ação de voltar não definida para o bloco: ${currentActiveBlockId}`);
                 break;
         }
@@ -1619,9 +1531,8 @@
       // Chamada da função de setup na inicialização e ao mudar de tela
       document.addEventListener('DOMContentLoaded', startNewAnalysis);
       
-      // --- Adiciona Listeners para a navegação de Voltar (Global e Inline) ---
-      if(navBackButton) navBackButton.addEventListener('click', goBack);
-      
+      // --- Adiciona Listeners para a navegação de Voltar ---
+      // Eles já chamam goBack(), que contém a lógica de navegação.
       if(backShapeInstruction) backShapeInstruction.addEventListener('click', goBack);
       if(backMeasurement) backMeasurement.addEventListener('click', goBack);
       if(backShapeResult) backShapeResult.addEventListener('click', goBack);
