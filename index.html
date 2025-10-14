@@ -116,6 +116,13 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+    
+    /* Ajusta o canvas para sempre preencher a largura do contêiner sem distorção inicial */
+    #imageCanvas {
+        width: 100%;
+        height: auto; /* A altura será definida dinamicamente pelo JS para manter a proporção */
+        display: block;
+    }
   </style>
 </head>
 <body class="bg-animation min-h-screen p-4 sm:p-8 text-gray-800 flex items-center justify-center">
@@ -570,7 +577,7 @@
             "Curtos X Curtos": { fortes: 'Dupla prática, objetiva e voltada à ação. Alta capacidade de execução e de resolver problemas de forma direta. Relação com pouca hesitação e foco em resultados imediatos.', fracos: 'Impaciência mútua e baixa tolerância à reflexão ou ao emocional. Podem ser rígidos e ter dificuldade em aceitar que o outro desacelere. Conflitos tendem a ser diretos e rápidos, mas pouco elaborados.', analise_curta: 'Ambos são fogo e movimento. Match de ação imediata e eficiência, mas com impaciência dobrada. Se um precisar de tempo para refletir, o outro estará na porta esperando. O desafio é aprender a respirar junto e dar espaço à emoção.' },
             "Curtos X Normais": { fortes: 'O Curto traz a ação e o resultado, o Normal traz o equilíbrio e a ponderação. O Normal modera o impulso do Curto e o Curto estimula a ação do Normal. Parceria estável e com boa sinergia entre prática e consciência.', fracos: 'O Curto pode considerar o Normal lento ou excessivamente emocional. O Normal pode se sentir pressionado ou desrespeitado pelo imediatismo do Curto. Conflito entre a velocidade e a necessidade de processar.', analise_curta: 'Um é fogo e movimento, o outro é equilíbrio e bom senso. Quando juntos, se completam, pois um acelera, o outro ajusta o ritmo. Mas se não houver sintonia, pode rolar atrito entre impulsividade e paciência. Match energético equilibrado, com potencial real de crescimento.' },
             "Curtos X Longos": { fortes: 'O Longo traz a visão, a criatividade e a profundidade, e o Curto traz a concretização e a disciplina. O Curto aterra as ideias do Longo, e o Longo inspira a mente do Curto. Potencial para grandes realizações.', fracos: 'O Longo tende a ver o Curto como simplório ou insensível. O Curto se frustra com a abstração e a dispersão do Longo. Relação exige tolerância para a diferença de ritmo (rápido vs. reflexivo).', analise_curta: 'O Curto é pé no chão, o Longo é cabeça nas nuvens. O Curto oferece a âncora para as ideias criativas do Longo. O desafio é gigantesco: o Longo precisa descer e o Curto precisa subir, ou o atrito da diferença de ritmo pode levar à frustração mútua. Grande potencial de aprendizado.' },
-            "Normais X Normais": { fortes: 'Relação de harmonia, estabilidade e previsibilidade. Grande equilíbrio emocional e facilidade em encontrar o meio-termo. Ambas as partes valorizam a coerência e a sensibilidade.', fracos: 'Risco de acomodação, falta de impulso para grandes mudanças ou ousadia. Podem ser excessivamente cautelosos e evitar conflitos necessários, resultando em insatisfação velada.', analise_curta: 'Dupla de equilíbrio. Trazem estabilidade, coerência e previsibilidade para a relação. O ponto fraco é o excesso de cautela: evitam o confronto e podem cair na acomodação, faltando o impulso para grandes saltos ou mudanças. Match seguro, mas que precisa de um "empurrãozinho" para crescer.' },
+            "Normais X Normais": { fortes: 'Relação de harmonia, estabilidade e previsibilidade. Grande equilíbrio emocional e facilidade em encontrar o meio-termo. Ambas as partes valorizam a coerência e a sensibilidade.', fracos: 'Risco de acomodação, falta de impulso para grandes mudanças ou ousadia. Podem ser excessivamente cautelosos e evitar conflitos necessários, resultando em insatisfação velada.', analise_curta: 'Dupla de equilíbrio. Trazem稳定性, coerência e previsibilidade para a relação. O ponto fraco é o excesso de cautela: evitam o confronto e podem cair na acomodação, faltando o impulso para grandes saltos ou mudanças. Match seguro, mas que precisa de um "empurrãozinho" para crescer.' },
             "Normais X Longos": { fortes: 'O Longo traz a sensibilidade e a reflexão aprofundada, e o Normal, o enraizamento e a estabilidade. O Normal ajuda a estabilizar as emoções do Longo e o Longo aprofunda a percepção do Normal.', fracos: 'O Longo pode sentir falta de profundidade no Normal. O Normal pode se sentir sobrecarregado pela hipersensibilidade ou pela dispersão mental do Longo.', analise_curta: 'O Longo traz profundidade e intuição; o Normal, estabilidade e senso prático. Match que funciona se o Normal não for muito racional: o Normal oferece um chão seguro para o Longo sonhar. O desafio é a hipersensibilidade do Longo, que pode sobrecarregar o equilíbrio do Normal.' },
             "Longos X Longos": { fortes: 'Relação de grande profundidade, criatividade e riqueza emocional. Ambas as partes valorizam a análise, a escuta e a abstração. Forte conexão no campo das ideias e da intuição.', fracos: 'Pouca conexão com a realidade prática e dificuldade em tomar decisões rápidas. Risco de dispersão e de se perder em reflexões excessivas. Podem ser hipersensíveis e facilmente sobrecarregados pela emoção.', analise_curta: 'Dupla de sonhadores, poetas e analistas. Grande conexão na imaginação e no campo emocional profundo. O problema é o mundo real: ambos podem se perder em análises e reflexões sem nunca tomar uma atitude. Match de alma, mas que precisa de um despertador e um calendário.' }
         },
@@ -783,7 +790,45 @@
           }
       }
       
-      // REMOVIDO: Função setupNavigationButtons, pois a navegação é interna
+      // Função para ajustar o canvas de medição dinamicamente, mantendo a proporção (CORRIGIDA)
+      function adjustCanvasDimensions(imageElement) {
+          // Pega a largura do contêiner pai para garantir que a largura seja medida corretamente (100% da área)
+          const containerDiv = measurementBlock.querySelector('.relative');
+          if (!containerDiv) {
+              console.error("Contêiner do canvas não encontrado.");
+              return;
+          }
+          
+          // Pega a largura real do contêiner onde o canvas está inserido
+          // Usa getBoundingClientRect().width para garantir que pegamos a largura visível após o display:block
+          const maxWidth = containerDiv.getBoundingClientRect().width; 
+          
+          let originalWidth = imageElement.width;
+          let originalHeight = imageElement.height;
+          
+          if (originalWidth === 0 || originalHeight === 0) {
+              console.warn("Dimensões da imagem não carregadas corretamente.");
+              return;
+          }
+
+          const aspectRatio = originalWidth / originalHeight;
+          
+          // Calcula a nova altura para preencher a largura disponível mantendo a proporção
+          const newWidth = maxWidth;
+          const newHeight = maxWidth / aspectRatio;
+          
+          // Define as dimensões internas do canvas (onde o desenho ocorre)
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+
+          // Se as dimensões internas do canvas forem 0 ou NaN, tentamos reverter para um fallback.
+          if (canvas.width === 0 || isNaN(canvas.width)) {
+              console.error("A largura do canvas resultou em 0 ou NaN."); // <-- LINHA DE ERRO REPORTADA
+              canvas.width = 300; // Valor fixo de fallback
+              canvas.height = 300 / aspectRatio; 
+          }
+      }
+
       
       function showBlock(blockToShow) {
         const allBlocks = [splashScreen, personalizationBlock, uploadBlock, shapeInstructionBlock, ratioInstructionBlock, measurementBlock, shapeResultBlock, ratioResultBlock, nailsQuestionBlock, comparisonReportBlock, previewBlock, legalDocumentsBlock];
@@ -818,18 +863,11 @@
 
       function processImageAndContinue(dataUrl) {
         img.onload = () => {
-            const maxWidth = 800, maxHeight = 600;
-            let { width, height } = img;
-            const aspectRatio = img.width / img.height;
-            if (img.width > maxWidth || img.height > maxHeight) {
-                if (aspectRatio > 1) { width = maxWidth; height = width / aspectRatio; } 
-                else { height = maxHeight; width = height * aspectRatio; }
-            }
-            canvas.width = width;
-            canvas.height = height;
+            // Apenas carrega a imagem, sem redimensionamento aqui, pois o redimensionamento/proporção
+            // é tratado no startShapeAnalysis e é dependente da rotação.
             
             photoPreview.src = dataUrl;
-            imageUrl = dataUrl;
+            imageUrl = dataUrl; // Atualiza a URL da imagem global/persistente
             currentRotation = 0;
             photoPreview.style.transform = 'rotate(0deg)';
             
@@ -851,10 +889,15 @@
           document.getElementById('ratio-target-name').textContent = formatName(targetName);
           document.getElementById('measurement-target-name').textContent = formatName(targetName);
           
+          // O img é carregado novamente para obter as dimensões corretas (pós-rotação)
           img.onload = () => {
+              // REMOVIDO: adjustCanvasDimensions(img); - Movido para o clique do "Continuar" para garantir que o bloco esteja visível
               showBlock(shapeInstructionBlock); 
           };
-          img.src = imageOverrideUrl;
+          img.src = imageOverrideUrl; // Usa a imagem (potencialmente rotacionada)
+          
+          // Atualiza imageUrl para ser a versão mais recente (que pode ter sido rotacionada)
+          imageUrl = imageOverrideUrl; 
       }
       
       // Função para iniciar o fluxo de medição para o Tamanho dos Dedos
@@ -862,7 +905,13 @@
           currentAnalysisPhase = 'ratio'; 
           points = []; 
           currentStep = 1; 
-          showBlock(ratioInstructionBlock); 
+          
+          // Recarrega a imagem para garantir que o canvas de medição seja redimensionado corretamente
+          img.onload = () => {
+              // REMOVIDO: adjustCanvasDimensions(img); - Movido para o clique do "Continuar" para garantir que o bloco esteja visível
+              showBlock(ratioInstructionBlock);
+          };
+          img.src = imageUrl; 
       }
       
       // Função para atualizar a UI do bloco de medição
@@ -887,10 +936,13 @@
         });
       }
 
-      // Função de Desenho no Canvas (CORRIGIDA)
+      // Função de Desenho no Canvas 
       function drawCanvas() {
+        if (canvas.width === 0 || canvas.height === 0 || !img.complete) return;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        // Desenha a imagem na dimensão interna do canvas (canvas.width / canvas.height)
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height); 
         
         if (currentAnalysisPhase === 'shape') {
           const refY = canvas.height / 2;
@@ -905,7 +957,7 @@
             ctx.lineTo(points[1].x, points[1].y);
             Object.assign(ctx, { strokeStyle: '#ef4444', lineWidth: 3 }).stroke();
 
-            // CORREÇÃO: Só desenha a segunda linha se o terceiro ponto já existir
+            // Só desenha a segunda linha se o terceiro ponto já existir
             if (points.length >= 3) {
               // Desenha a linha Base do 2º dedo (P2) até Fim do Peito do Pé (P3)
               ctx.beginPath(); 
@@ -922,10 +974,13 @@
             const refY = canvas.height / 2;
             ctx.beginPath(); ctx.moveTo(point.x, point.y); ctx.lineTo(point.x, refY);
             Object.assign(ctx, { strokeStyle: 'rgba(255, 0, 0, 0.6)', lineWidth: 3 }).stroke();
+            // REMOVIDA A LIGAÇÃO ENTRE PONTOS NA FASE SHAPE (CAUSAVA CONFUSÃO)
+            /*
             if (index > 0) {
               ctx.beginPath(); ctx.moveTo(points[index-1].x, points[index-1].y); ctx.lineTo(point.x, point.y);
               Object.assign(ctx, { strokeStyle: 'rgba(0, 0, 255, 0.3)', lineWidth: 2 }).stroke();
             }
+            */
             const lengthValue = Math.abs(point.y - refY).toFixed(0);
             Object.assign(ctx, { fillStyle: '#ff0000', font: 'bold 12px Arial' }).fillText(`${lengthValue}px`, point.x + 10, (point.y + refY) / 2);
           } 
@@ -943,15 +998,16 @@
           
           if (type === 'shape') {
               targetData.shape = result;
-              targetData.shapeImage = imageUrl; // Salva a imagem final da Pessoa 1
+              targetData.shapeImage = imageUrl; // Salva a IMAGEM ATUALIZADA
               if (currentPerson === 'P2') {
-                  targetData.shapeImage = imageUrl; // Salva a imagem final da Pessoa 2
+                  targetData.shapeImage = imageUrl; // Salva a IMAGEM ATUALIZADA
               }
           } else if (type === 'ratio') {
               targetData.ratio = result;
           } else if (type === 'questions') {
               // Agora, 'result' contém apenas { unhas: X, finalImage: Y }
               Object.assign(targetData, result);
+              targetData.finalImage = imageUrl; // Salva a IMAGEM ATUALIZADA
           }
           
           if (currentPerson === 'P1') { analysisDataP1 = targetData; } 
@@ -1030,7 +1086,6 @@
               let score = 10;
               let frictionPoints = 0;
 
-              // Calcula o atrito com base nos Pontos Fracos/Desafios (analise_curta)
               // 1. Formato (Pensamento)
               const shapeRel = RELATIONAL_DATA.Formato[shapeKey];
               if (shapeRel && (shapeRel.fracos.includes('rigidez') || shapeRel.fracos.includes('conflitos de controle') || shapeRel.fracos.includes('paralisia por análise') || shapeRel.fracos.includes('dispersão'))) {
@@ -1042,7 +1097,8 @@
                   frictionPoints += 1.5;
               }
               // 3. Unhas (Convicção/Assertividade)
-              const unhasRel = RELATIONAL_DATA['Tamanho das Unhas'][unhasKey];
+              const unhasData = RELATIONAL_DATA['Tamanho das Unhas'] || {}; // FIX: Acesso defensivo
+              const unhasRel = unhasData[unhasKey];
               if (unhasRel && (unhasRel.fracos.includes('rigidez') || unhasRel.fracos.includes('conflito de poder') || unhasRel.fracos.includes('dogmático') || unhasRel.fracos.includes('indecisão'))) {
                   frictionPoints += 2.0; // Unhas têm peso maior na assertividade relacional
               }
@@ -1068,7 +1124,9 @@
           // --- OBTENÇÃO DOS DADOS RELACIONAIS ---
           const shapeRel = RELATIONAL_DATA.Formato[shapeKey];
           const ratioRel = RELATIONAL_DATA['Tamanho Dedos'][ratioKey];
-          const unhasRel = RELATIONAL_DATA['Tamanho das Unhas'][unhasKey];
+          // FIX: Acesso defensivo à subestrutura
+          const unhasData = RELATIONAL_DATA['Tamanho das Unhas'] || {};
+          const unhasRel = unhasData[unhasKey];
           
           // Fallback para análises (apenas para exibição)
           const shapeAnaliseCurta = shapeRel ? shapeRel.analise_curta : 'Análise indisponível.';
@@ -1088,12 +1146,12 @@
           document.getElementById('summary-p1-shape').textContent = p1.shape;
           document.getElementById('summary-p1-ratio').textContent = p1.ratio;
           document.getElementById('summary-p1-nails').textContent = p1.unhas;
-          document.getElementById('final-report-image-p1').src = p1.finalImage; // CORRIGIDO
+          document.getElementById('final-report-image-p1').src = p1.finalImage; // USANDO A IMAGEM PERSISTIDA
           
           document.getElementById('summary-p2-shape').textContent = p2.shape;
           document.getElementById('summary-p2-ratio').textContent = p2.ratio;
           document.getElementById('summary-p2-nails').textContent = p2.unhas;
-          document.getElementById('final-report-image-p2').src = p2.finalImage; // CORRIGIDO
+          document.getElementById('final-report-image-p2').src = p2.finalImage; // USANDO A IMAGEM PERSISTIDA
 
           let report = '';
           
@@ -1143,7 +1201,7 @@
               <div class="mt-8 pt-4 border-t border-teal-200">
                   <h4 class="text-xl font-bold text-teal-800 mb-2">A Fórmula de Compatibilidade</h4>
                   <p class="text-sm leading-relaxed">
-                      A união é a arte de harmonizar as diferenças. Onde há Pontos Fortes, existe fluidez e segurança e onde há Pontos Fracos, existe um convite para o crescimento. Os pés revelam que, para ${name1} e ${name2} prosperarem, é crucial que ambos se dediquem a compreender e respeitar o ritmo de pensamento e a rigidez de convicção um do outro.
+                      A união é a arte de harmonizar as diferenças. Onde há Pontos Fortes, existe fluidez e segurança e onde há Pontos Fracos, existe um convite para o crescimento. Os pés revelam que para ${name1} e ${name2} prosperarem, é crucial que ambos se dediquem a compreender e respeitar o ritmo de pensamento e a rigidez de convicção um do outro.
                   </p>
               </div>
           </div>
@@ -1304,7 +1362,15 @@
         const labels = currentAnalysisPhase === 'shape' ? shapeStepLabels : ratioStepLabels;
         if (currentStep > labels.length) return;
         const rect = canvas.getBoundingClientRect();
-        points.push({ x: (e.clientX - rect.left) * (canvas.width / rect.width), y: (e.clientY - rect.top) * (canvas.height / rect.height) });
+        // A chave aqui é mapear as coordenadas do clique (relativas ao elemento HTML) para as dimensões internas do canvas (onde a imagem é desenhada).
+        // Isso é essencial quando o canvas.style.width é 100% mas o canvas.width/height interno é dinâmico.
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        points.push({ 
+            x: (e.clientX - rect.left) * scaleX, 
+            y: (e.clientY - rect.top) * scaleY 
+        });
         currentStep++; drawCanvas(); updateUI();
         if (currentStep > labels.length) {
           canvas.classList.remove('custom-cursor');
@@ -1314,9 +1380,30 @@
       
       if(calculateButton) calculateButton.addEventListener('click', calculateAndDisplayResult);
       if(redoButton) redoButton.addEventListener('click', () => { points = []; currentStep = 1; canvas.classList.add('custom-cursor'); drawCanvas(); updateUI(); showBlock(measurementBlock); });
-      if(continueToShapeMeasurement) continueToShapeMeasurement.addEventListener('click', () => { showBlock(measurementBlock); drawCanvas(); updateUI(); });
+      
+      // CORREÇÃO: Chamada para ajuste de dimensões antes de desenhar
+      if(continueToShapeMeasurement) continueToShapeMeasurement.addEventListener('click', () => { 
+          showBlock(measurementBlock); 
+          // Aguarda um ciclo para garantir que o measurementBlock tenha as dimensões corretas na tela
+          setTimeout(() => {
+              adjustCanvasDimensions(img);
+              drawCanvas(); 
+              updateUI(); 
+          }, 400); // FIX: Aumentado o atraso para 400ms para evitar o erro de largura=0
+      });
+      
       if(analyzeRatioButton) analyzeRatioButton.addEventListener('click', startRatioAnalysis);
-      if(continueToRatioMeasurement) continueToRatioMeasurement.addEventListener('click', () => { showBlock(measurementBlock); drawCanvas(); updateUI(); });
+      
+      // CORREÇÃO: Chamada para ajuste de dimensões antes de desenhar
+      if(continueToRatioMeasurement) continueToRatioMeasurement.addEventListener('click', () => { 
+          showBlock(measurementBlock); 
+          // Aguarda um ciclo para garantir que o measurementBlock tenha as dimensões corretas na tela
+          setTimeout(() => {
+              adjustCanvasDimensions(img);
+              drawCanvas(); 
+              updateUI(); 
+          }, 400); // FIX: Aumentado o atraso para 400ms para evitar o erro de largura=0
+      });
       
       if(newRatioAnalysisButton) newRatioAnalysisButton.addEventListener('click', () => { 
           const targetName = currentPerson === 'P1' ? nameP1 : nameP2;
@@ -1333,7 +1420,7 @@
           document.getElementById('nails-error').classList.add('hidden');
           
           // 1. Salva a escolha da unha (e final image) no objeto de dados atual
-          saveAnalysisResult('questions', { unhas: unhas.value, finalImage: imageUrl }); 
+          saveAnalysisResult('questions', { unhas: unhas.value }); 
 
           // 2. Inicia estado de loading
           loadingSpinner.classList.remove('hidden');
@@ -1370,31 +1457,58 @@
       
       if(startNewFullAnalysisButton) startNewFullAnalysisButton.addEventListener('click', startNewAnalysis);
       
-      // Preview/Rotate logic (mantido)
+      // Preview/Rotate logic (CORRIGIDO PARA APLICAR A ROTAÇÃO NA IMAGEM)
       if(rotateLeftButton) rotateLeftButton.addEventListener('click', () => { currentRotation = (currentRotation - 90) % 360; photoPreview.style.transform = `rotate(${currentRotation}deg)`; });
       if(rotateRightButton) rotateRightButton.addEventListener('click', () => { currentRotation = (currentRotation + 90) % 360; photoPreview.style.transform = `rotate(${currentRotation}deg)`; });
+      
+      // Lógica CORRIGIDA para o botão "Usar Foto"
       if(usePhotoButton) usePhotoButton.addEventListener('click', () => { 
         if (!photoPreview.src) return;
         
-        if (currentRotation !== 0) {
-          const tempCanvas = document.createElement('canvas');
-          const tempCtx = tempCanvas.getContext('2d');
+        // CORREÇÃO DE ROTAÇÃO E DIMENSÕES PARA GARANTIR A PROPORÇÃO:
+        if (currentRotation % 360 !== 0) {
           const tempImg = new Image();
           tempImg.onload = () => {
-            if (currentRotation === 90 || currentRotation === -270 || currentRotation === 270 || currentRotation === -90) {
-              tempCanvas.width = tempImg.height; tempCanvas.height = tempImg.width;
+            const tempCanvas = document.createElement('canvas');
+            const rotationInRadians = (currentRotation * Math.PI) / 180;
+            
+            // Verifica se houve troca de largura/altura (90 ou 270 graus)
+            const isWidthHeightSwapped = Math.abs(currentRotation % 180) === 90;
+            const newWidth = isWidthHeightSwapped ? tempImg.height : tempImg.width;
+            const newHeight = isWidthHeightSwapped ? tempImg.width : tempImg.height;
+
+            tempCanvas.width = newWidth;
+            tempCanvas.height = newHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            tempCtx.save();
+            tempCtx.translate(newWidth / 2, newHeight / 2);
+            tempCtx.rotate(rotationInRadians);
+            
+            // Se houve troca, desenha com as dimensões originais invertidas
+            if (isWidthHeightSwapped) {
+                tempCtx.drawImage(tempImg, -tempImg.width / 2, -tempImg.height / 2, tempImg.width, tempImg.height);
             } else {
-              tempCanvas.width = tempImg.width; tempCanvas.height = tempImg.height;
+                tempCtx.drawImage(tempImg, -tempImg.width / 2, -tempImg.height / 2);
             }
-            tempCtx.translate(tempCanvas.width / 2, tempCanvas.height / 2);
-            tempCtx.rotate((currentRotation * Math.PI) / 180);
-            tempCtx.drawImage(tempImg, -tempImg.width / 2, -tempImg.height / 2);
-            const rotatedImageData = tempCanvas.toDataURL('image/jpeg', 0.9);
-            currentRotation = 0; photoPreview.style.transform = 'rotate(0deg)';
+            tempCtx.restore();
+            
+            // Obtém a nova imagem rotacionada e atualiza o estado global
+            // FIX #1: Aumenta a qualidade para 1.0 para reduzir o efeito "tremido"
+            const rotatedImageData = tempCanvas.toDataURL('image/jpeg', 1.0); 
+            
+            currentRotation = 0; // Reseta a rotação visual
+            photoPreview.style.transform = 'rotate(0deg)';
+            
+            // ATUALIZAÇÃO CHAVE: Define o imageUrl global antes de iniciar a análise.
+            imageUrl = rotatedImageData; 
+            
+            // Inicia a análise com a nova imagem rotacionada
             startShapeAnalysis(rotatedImageData);
           };
           tempImg.src = photoPreview.src;
         } else {
+          // Nenhuma rotação: usa a imagem atual (imageUrl já está correta de processImageAndContinue)
           startShapeAnalysis(photoPreview.src);
         }
       });
