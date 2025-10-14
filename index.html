@@ -408,68 +408,68 @@
     <div id="comparison-report-block" class="bg-white p-8 sm:p-12 rounded-xl shadow-lg border-2 border-green-300 transition-all duration-300 step-container">
         
         <!-- Título -->
-        <div class="text-center mb-10 pb-6 border-b border-gray-200 pdf-page-break-after">
+        <div class="text-center mb-6 pb-4 border-b border-gray-200 pdf-page-break-after">
             <!-- NOVO TÍTULO EM DUAS LINHAS -->
             <h2 class="text-2xl sm:text-3xl font-bold text-teal-700 mb-1">RELATÓRIO DE ANÁLISE DE "MATCH"</h2>
             <h2 class="text-2xl sm:text-3xl font-bold text-teal-700 mb-3">PELOS PÉS - By @IrmoNeto</h2>
             
             <!-- CORRIGIDO: Distribuição do nome em duas linhas -->
-            <p class="text-xl text-gray-700">Compatibilidade dos Pés de</p>
-            <p class="text-2xl font-bold text-teal-600 mt-1">
+            <p class="text-lg text-gray-700">Compatibilidade dos Pés de</p>
+            <p class="text-xl font-bold text-teal-600 mt-1">
                 <span id="report-target-name-p1" class="font-bold"></span> & <span id="report-target-name-p2" class="font-bold"></span>
             </p>
         </div>
 
         <!-- Análises Individuais (Resumo) -->
-        <div class="flex flex-col space-y-8">
-            <h3 class="text-2xl font-extrabold text-gray-800 text-center">ANÁLISE INDIVIDUAL SIMPLIFICADA</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="flex flex-col space-y-6">
+            <h3 class="text-xl font-extrabold text-gray-800 text-center">ANÁLISE INDIVIDUAL SIMPLIFICADA</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Resumo Pessoa 1 (CORRIGIDO: Cores para verde) -->
-                <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                     <!-- Título alterado para verde escuro (text-green-800) -->
-                    <h4 class="text-xl font-bold text-green-800 mb-4 border-b pb-2" id="report-p1-title"></h4>
-                    <ul class="space-y-3 text-gray-700 mt-4 text-sm">
+                    <h4 class="text-lg font-bold text-green-800 mb-3 border-b pb-1" id="report-p1-title"></h4>
+                    <ul class="space-y-1 text-gray-700 mt-2 text-sm">
                         <li class="flex justify-between"><strong>Formato:</strong> <span id="summary-p1-shape" class="font-semibold text-right"></span></li>
                         <li class="flex justify-between"><strong>Tamanho Dedos:</strong> <span id="summary-p1-ratio" class="font-semibold text-right"></span></li>
                         <li class="flex justify-between"><strong>Tamanho Unhas:</strong> <span id="summary-p1-nails" class="font-semibold text-right"></span></li> 
                     </ul>
                     <!-- CORRIGIDO: Imagem injetada via JS, fallback removido -->
-                    <img id="final-report-image-p1" src="" alt="Foto do Pé 1" class="mx-auto rounded-lg shadow-md mt-4 border border-gray-300" style="max-width: 150px;">
+                    <img id="final-report-image-p1" src="" alt="Foto do Pé 1" class="mx-auto rounded-lg shadow-md mt-3 border border-gray-300" style="max-width: 120px;">
                 </div>
                 <!-- Resumo Pessoa 2 (CORRIGIDO: Cores para verde) -->
-                <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                     <!-- Título alterado para verde escuro (text-green-800) -->
-                    <h4 class="text-xl font-bold text-green-800 mb-4 border-b pb-2" id="report-p2-title"></h4>
-                    <ul class="space-y-3 text-gray-700 mt-4 text-sm">
+                    <h4 class="text-lg font-bold text-green-800 mb-3 border-b pb-1" id="report-p2-title"></h4>
+                    <ul class="space-y-1 text-gray-700 mt-2 text-sm">
                         <li class="flex justify-between"><strong>Formato:</strong> <span id="summary-p2-shape" class="font-semibold text-right"></span></li>
                         <li class="flex justify-between"><strong>Tamanho Dedos:</strong> <span id="summary-p2-ratio" class="font-semibold text-right"></span></li>
                         <li class="flex justify-between"><strong>Tamanho Unhas:</strong> <span id="summary-p2-nails" class="font-semibold text-right"></span></li> 
                     </ul>
                     <!-- CORRIGIDO: Imagem injetada via JS, fallback removido -->
-                    <img id="final-report-image-p2" src="" alt="Foto do Pé 2" class="mx-auto rounded-lg shadow-md mt-4 border border-gray-300" style="max-width: 150px;">
+                    <img id="final-report-image-p2" src="" alt="Foto do Pé 2" class="mx-auto rounded-lg shadow-md mt-3 border border-gray-300" style="max-width: 120px;">
                 </div>
             </div>
         </div>
 
-        <div class="mt-10 pt-4 border-t border-gray-200 pdf-page-break-after">
-            <h3 class="text-2xl font-extrabold text-green-700 mb-6 text-center">ANÁLISE DE COMPATIBILIDADE INTERPESSOAL</h3>
+        <div class="mt-6 pt-4 border-t border-gray-200 pdf-page-break-after">
+            <h3 class="text-xl font-extrabold text-green-700 mb-4 text-center">ANÁLISE DE COMPATIBILIDADE INTERPESSOAL</h3>
             
-            <div id="comparison-analysis-result" class="prose max-w-none text-gray-800 leading-relaxed bg-gray-50 p-6 sm:p-8 rounded-lg border-l-4 border-green-400">
+            <div id="comparison-analysis-result" class="prose max-w-none text-gray-800 leading-relaxed bg-gray-50 p-4 sm:p-6 rounded-lg border-l-4 border-green-400 text-sm">
                 Aguardando dados para gerar o relatório comparativo...
             </div>
         </div>
         
         <!-- CTA para Página de Vendas -->
-        <div class="mt-8 mb-4 text-center">
-            <h4 class="text-xl font-bold text-gray-800 mb-4">Quer saber mais sobre o seu pé e como ele revela sua personalidade?</h4>
-            <a href="https://irmoneto.github.io/INFOPRODUTOS-BY-IRMONETO/" target="_blank" class="inline-flex items-center justify-center bg-yellow-500 text-white py-3 px-8 rounded-full font-bold shadow-xl hover:bg-yellow-600 transition-colors transform hover:scale-[1.03] text-lg w-full sm:w-auto">
+        <div class="mt-4 mb-2 text-center">
+            <h4 class="text-lg font-bold text-gray-800 mb-3">Quer saber mais sobre o seu pé e como ele revela sua personalidade?</h4>
+            <a href="https://irmoneto.github.io/INFOPRODUTOS-BY-IRMONETO/" target="_blank" class="inline-flex items-center justify-center bg-yellow-500 text-white py-3 px-8 rounded-full font-bold shadow-xl hover:bg-yellow-600 transition-colors transform hover:scale-[1.03] text-base w-full sm:w-auto">
                 CLIQUE AQUI E ACESSE MAIS CONTEÚDOS SOBRE O TEMA
                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
             </a>
         </div>
     
         <!-- Botões de Ação Final (Com botão Compartilhar Adicionado) -->
-        <div class="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4 action-buttons">
+        <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 action-buttons">
             <button id="save-analysis-button" class="bg-green-600 text-white py-3 px-8 rounded-full font-bold shadow-lg hover:bg-green-700 transition-colors w-full sm:w-auto">
                 Salvar Relatório em PDF
             </button>
@@ -577,7 +577,7 @@
             "Curtos X Curtos": { fortes: 'Dupla prática, objetiva e voltada à ação. Alta capacidade de execução e de resolver problemas de forma direta. Relação com pouca hesitação e foco em resultados imediatos.', fracos: 'Impaciência mútua e baixa tolerância à reflexão ou ao emocional. Podem ser rígidos e ter dificuldade em aceitar que o outro desacelere. Conflitos tendem a ser diretos e rápidos, mas pouco elaborados.', analise_curta: 'Ambos são fogo e movimento. Match de ação imediata e eficiência, mas com impaciência dobrada. Se um precisar de tempo para refletir, o outro estará na porta esperando. O desafio é aprender a respirar junto e dar espaço à emoção.' },
             "Curtos X Normais": { fortes: 'O Curto traz a ação e o resultado, o Normal traz o equilíbrio e a ponderação. O Normal modera o impulso do Curto e o Curto estimula a ação do Normal. Parceria estável e com boa sinergia entre prática e consciência.', fracos: 'O Curto pode considerar o Normal lento ou excessivamente emocional. O Normal pode se sentir pressionado ou desrespeitado pelo imediatismo do Curto. Conflito entre a velocidade e a necessidade de processar.', analise_curta: 'Um é fogo e movimento, o outro é equilíbrio e bom senso. Quando juntos, se completam, pois um acelera, o outro ajusta o ritmo. Mas se não houver sintonia, pode rolar atrito entre impulsividade e paciência. Match energético equilibrado, com potencial real de crescimento.' },
             "Curtos X Longos": { fortes: 'O Longo traz a visão, a criatividade e a profundidade, e o Curto traz a concretização e a disciplina. O Curto aterra as ideias do Longo, e o Longo inspira a mente do Curto. Potencial para grandes realizações.', fracos: 'O Longo tende a ver o Curto como simplório ou insensível. O Curto se frustra com a abstração e a dispersão do Longo. Relação exige tolerância para a diferença de ritmo (rápido vs. reflexivo).', analise_curta: 'O Curto é pé no chão, o Longo é cabeça nas nuvens. O Curto oferece a âncora para as ideias criativas do Longo. O desafio é gigantesco: o Longo precisa descer e o Curto precisa subir, ou o atrito da diferença de ritmo pode levar à frustração mútua. Grande potencial de aprendizado.' },
-            "Normais X Normais": { fortes: 'Relação de harmonia, estabilidade e previsibilidade. Grande equilíbrio emocional e facilidade em encontrar o meio-termo. Ambas as partes valorizam a coerência e a sensibilidade.', fracos: 'Risco de acomodação, falta de impulso para grandes mudanças ou ousadia. Podem ser excessivamente cautelosos e evitar conflitos necessários, resultando em insatisfação velada.', analise_curta: 'Dupla de equilíbrio. Trazem稳定性, coerência e previsibilidade para a relação. O ponto fraco é o excesso de cautela: evitam o confronto e podem cair na acomodação, faltando o impulso para grandes saltos ou mudanças. Match seguro, mas que precisa de um "empurrãozinho" para crescer.' },
+            "Normais X Normais": { fortes: 'Relação de harmonia, estabilidade e previsibilidade. Grande equilíbrio emocional e facilidade em encontrar o meio-termo. Ambas as partes valorizam a coerência e a sensibilidade.', fracos: 'Risco de acomodação, falta de impulso para grandes mudanças ou ousadia. Podem ser excessivamente cautelosos e evitar conflitos necessários, resultando em insatisfação velada.', analise_curta: 'Dupla de equilíbrio. Trazem estabilidade, coerência e previsibilidade para a relação. O ponto fraco é o excesso de cautela: evitam o confronto e podem cair na acomodação, faltando o impulso para grandes saltos ou mudanças. Match seguro, mas que precisa de um "empurrãozinho" para crescer.' },
             "Normais X Longos": { fortes: 'O Longo traz a sensibilidade e a reflexão aprofundada, e o Normal, o enraizamento e a estabilidade. O Normal ajuda a estabilizar as emoções do Longo e o Longo aprofunda a percepção do Normal.', fracos: 'O Longo pode sentir falta de profundidade no Normal. O Normal pode se sentir sobrecarregado pela hipersensibilidade ou pela dispersão mental do Longo.', analise_curta: 'O Longo traz profundidade e intuição; o Normal, estabilidade e senso prático. Match que funciona se o Normal não for muito racional: o Normal oferece um chão seguro para o Longo sonhar. O desafio é a hipersensibilidade do Longo, que pode sobrecarregar o equilíbrio do Normal.' },
             "Longos X Longos": { fortes: 'Relação de grande profundidade, criatividade e riqueza emocional. Ambas as partes valorizam a análise, a escuta e a abstração. Forte conexão no campo das ideias e da intuição.', fracos: 'Pouca conexão com a realidade prática e dificuldade em tomar decisões rápidas. Risco de dispersão e de se perder em reflexões excessivas. Podem ser hipersensíveis e facilmente sobrecarregados pela emoção.', analise_curta: 'Dupla de sonhadores, poetas e analistas. Grande conexão na imaginação e no campo emocional profundo. O problema é o mundo real: ambos podem se perder em análises e reflexões sem nunca tomar uma atitude. Match de alma, mas que precisa de um despertador e um calendário.' }
         },
@@ -1155,51 +1155,51 @@
 
           let report = '';
           
-          // Título de Abertura
-          report += `<h2 class="text-3xl font-extrabold text-gray-800 text-center mb-6">Compatibilidade dos Pés de</h2>
-                     <p class="text-2xl font-bold text-teal-600 mt-1 text-center mb-10">${name1} & ${name2}</p>
-                     <p class="text-xl text-center mb-10 text-teal-600">Será que dá match? Vamos descobrir o que os pés indicam!</p>`; // Movido o "Será que dá match" para cá
+          // Título de Abertura - MARGENS REDUZIDAS NO HTML ACIMA
+          report += `<h2 class="text-3xl font-extrabold text-gray-800 text-center mb-4">Compatibilidade dos Pés de</h2>
+                     <p class="text-2xl font-bold text-teal-600 mt-1 text-center mb-6">${name1} & ${name2}</p>
+                     <p class="text-xl text-center mb-6 text-teal-600">Será que dá match? Vamos descobrir o que os pés indicam!</p>`; 
 
-          // 1. Formato dos Pés (Pensamento)
-          report += `<div class="mt-4"><h4 class="text-xl font-bold text-gray-800 mb-2">Com relação ao formato dos pés:</h4>`;
+          // 1. Formato dos Pés (Pensamento) - MARGENS REDUZIDAS
+          report += `<div class="mt-2"><h4 class="text-lg font-bold text-gray-800 mb-1">Com relação ao formato dos pés:</h4>`;
           // CORREÇÃO: Removendo parênteses dos nomes e mantendo a formatação X
           report += `<p class="mb-1 font-semibold">${name1}=${p1.shape} × ${name2}=${p2.shape}</p>`;
-          report += `<p class="mb-4">${shapeAnaliseCurta}</p></div>`;
+          report += `<p class="mb-2">${shapeAnaliseCurta}</p></div>`;
 
-          // 2. Tamanho dos Dedos (Ação/Ritmo)
-          report += `<div class="mt-4"><h4 class="text-xl font-bold text-gray-800 mb-2">Com relação ao tamanho dos dedos:</h4>`;
+          // 2. Tamanho dos Dedos (Ação/Ritmo) - MARGENS REDUZIDAS
+          report += `<div class="mt-2"><h4 class="text-lg font-bold text-gray-800 mb-1">Com relação ao tamanho dos dedos:</h4>`;
           // CORREÇÃO: Removendo parênteses dos nomes e prefixando 'dedos'
           report += `<p class="mb-1 font-semibold">${name1}=dedos ${ratioP1Key} × ${name2}=dedos ${ratioP2Key}</p>`;
-          report += `<p class="mb-4">${ratioAnaliseCurta}</p></div>`;
+          report += `<p class="mb-2">${ratioAnaliseCurta}</p></div>`;
 
-          // 3. Tamanho das Unhas (Convicção)
-          report += `<div class="mt-4"><h4 class="text-xl font-bold text-gray-800 mb-2">Com relação ao tamanho das Unhas:</h4>`;
+          // 3. Tamanho das Unhas (Convicção) - MARGENS REDUZIDAS
+          report += `<div class="mt-2"><h4 class="text-lg font-bold text-gray-800 mb-1">Com relação ao tamanho das Unhas:</h4>`;
           // CORREÇÃO: Removendo parênteses dos nomes
           report += `<p class="mb-1 font-semibold">${name1}=${p1.unhas} × ${name2}=${p2.unhas}</p>`;
-          report += `<p class="mb-4">${unhasAnaliseCurta}</p></div>`;
+          report += `<p class="mb-2">${unhasAnaliseCurta}</p></div>`;
           
-          // Resultado Final — O Veredito dos Pés
-          report += `<div class="mt-8 pt-4 border-t-2 border-gray-300">
-              <h4 class="text-2xl font-extrabold text-red-700 text-center mb-4">Resultado Final — O Veredito dos Pés:</h4>
+          // Resultado Final — O Veredito dos Pés - MARGENS REDUZIDAS
+          report += `<div class="mt-4 pt-4 border-t-2 border-gray-300">
+              <h4 class="text-xl font-extrabold text-red-700 text-center mb-3">Resultado Final — O Veredito dos Pés:</h4>
               
-              <div class="text-center bg-green-50 p-6 rounded-lg shadow-md mb-8">
-                  <p class="text-lg font-semibold text-gray-800 mb-3">${name1} & ${name2} têm tudo para se entender bem — são parecidos na cabeça, complementares na ação e desafiadores nas convicções.</p>
-                  <p class="text-lg font-semibold text-gray-800">Quando equilibram mente, ritmo e firmeza, o relacionamento flui com maturidade e leveza.</p>
+              <div class="text-center bg-green-50 p-4 rounded-lg shadow-md mb-4">
+                  <p class="text-base font-semibold text-gray-800 mb-2">${name1} & ${name2} têm tudo para se entender bem — são parecidos na cabeça, complementares na ação e desafiadores nas convicções.</p>
+                  <p class="text-base font-semibold text-gray-800">Quando equilibram mente, ritmo e firmeza, o relacionamento flui com maturidade e leveza.</p>
               </div>
 
               <!-- Pontuação Visual -->
               <div class="text-center">
-                  <p class="text-4xl font-extrabold text-teal-600">${matchScore} / 10</p>
-                  <p class="text-lg font-bold text-gray-700 mb-6">Compatibilidade Geral</p>
-                  <div class="relative w-full max-w-sm mx-auto h-3 bg-gray-200 rounded-full">
-                      <div class="absolute h-3 rounded-full bg-teal-500 transition-all duration-1000" style="width: ${matchScore * 10}%;"></div>
+                  <p class="text-3xl font-extrabold text-teal-600">${matchScore} / 10</p>
+                  <p class="text-base font-bold text-gray-700 mb-4">Compatibilidade Geral</p>
+                  <div class="relative w-full max-w-sm mx-auto h-2 bg-gray-200 rounded-full">
+                      <div class="absolute h-2 rounded-full bg-teal-500 transition-all duration-1000" style="width: ${matchScore * 10}%;"></div>
                   </div>
               </div>
 
-              <p class="text-center text-lg font-semibold text-gray-700 mt-6">Um match com ótimo potencial — basta que cada um aprenda o passo do outro.</p>
+              <p class="text-center text-base font-semibold text-gray-700 mt-4">Um match com ótimo potencial — basta que cada um aprenda o passo do outro.</p>
               
-              <div class="mt-8 pt-4 border-t border-teal-200">
-                  <h4 class="text-xl font-bold text-teal-800 mb-2">A Fórmula de Compatibilidade</h4>
+              <div class="mt-4 pt-3 border-t border-teal-200">
+                  <h4 class="text-lg font-bold text-teal-800 mb-2">A Fórmula de Compatibilidade</h4>
                   <p class="text-sm leading-relaxed">
                       A união é a arte de harmonizar as diferenças. Onde há Pontos Fortes, existe fluidez e segurança e onde há Pontos Fracos, existe um convite para o crescimento. Os pés revelam que para ${name1} e ${name2} prosperarem, é crucial que ambos se dediquem a compreender e respeitar o ritmo de pensamento e a rigidez de convicção um do outro.
                   </p>
@@ -1207,7 +1207,7 @@
           </div>
           
           <!-- Assinatura -->
-          <p class="mt-4 text-right text-xs">Fraternos Abraços!<br><strong>Irmo Zuccato Neto</strong></p>`;
+          <p class="mt-3 text-right text-xs">Fraternos Abraços!<br><strong>Irmo Zuccato Neto</strong></p>`;
           
           comparisonAnalysisResult.innerHTML = report;
           showBlock(comparisonReportBlock);
