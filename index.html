@@ -749,11 +749,11 @@
           return name.charAt(0).toUpperCase() + name.slice(1);
       }
 
-      // ATUALIZADO: Função de classificação do Pé Egípcio (com a regra de 3.5%)
+      // ATUALIZADO: Função de classificação do Pé Egípcio (com a regra de 4.5%)
       function isEgyptianHarmonic(L1, L2, L3, L5) {
-          // Pé Egípcio: Dedão (Hálux) dominante em pelo menos 3.5% sobre o segundo dedo.
+          // Pé Egípcio: Dedão (Hálux) dominante em pelo menos 4.5% sobre o segundo dedo.
           // L1 é o comprimento do Hálux, L2 é o comprimento do 2º dedo.
-          if (L1 > L2 * 1.035) { 
+          if (L1 > L2 * 1.045) { 
               return true;
           }
           return false;
